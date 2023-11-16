@@ -1,0 +1,204 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Resource Files\ShaderFile">
+      <UniqueIdentifier>{ed5f3e1d-f993-4866-bdfe-74d2d4f31894}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AlignedAllocationPolicy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cameraclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="colorshaderclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="d3dclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DDSTextureLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="graphicsclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="inputclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="modelclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="systemclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="textureclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="textureshaderclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="skyboxshaderclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lightshaderclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lightclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="textclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fontclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fontshaderclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="cameraclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="colorshaderclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="d3dclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DDSTextureLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="graphicsclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="inputclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="modelclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="systemclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="textureclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="textureshaderclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="skyboxshaderclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lightclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lightshaderclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="fontshaderclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="textclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="fontclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="data\PlayerModel.mtl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="data\color.ps">
+      <Filter>Resource Files\ShaderFile</Filter>
+    </None>
+    <None Include="data\color.vs">
+      <Filter>Resource Files\ShaderFile</Filter>
+    </None>
+    <None Include="data\texture.ps">
+      <Filter>Resource Files\ShaderFile</Filter>
+    </None>
+    <None Include="data\texture.vs">
+      <Filter>Resource Files\ShaderFile</Filter>
+    </None>
+    <None Include="data\EnemyAirCraft.mtl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="data\Mountain.mtl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="data\skymap.ps">
+      <Filter>Resource Files\ShaderFile</Filter>
+    </None>
+    <None Include="data\skymap.vs">
+      <Filter>Resource Files\ShaderFile</Filter>
+    </None>
+    <None Include="data\light.ps">
+      <Filter>Resource Files\ShaderFile</Filter>
+    </None>
+    <None Include="data\light.vs">
+      <Filter>Resource Files\ShaderFile</Filter>
+    </None>
+    <None Include="data\font.vs">
+      <Filter>Resource Files\ShaderFile</Filter>
+    </None>
+    <None Include="data\font.ps">
+      <Filter>Resource Files\ShaderFile</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="data\PlayerModel.obj">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="data\EnemyAirCraft.obj">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="data\Target.obj">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="data\Mountain.obj">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="data\cube.obj">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="data\fontdata.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="data\PlayerModel.dds">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\EnemyAirCraft.dds">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\Target.dds">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\Mountain.dds">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\font.dds">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+</Project>

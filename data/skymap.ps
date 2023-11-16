@@ -1,0 +1,32 @@
+////////////////////////////////////////////////////////////////////////////////
+// Filename: skydome.ps
+////////////////////////////////////////////////////////////////////////////////
+
+
+/////////////
+// GLOBALS //
+////////////
+
+Texture2D ObjTexture;
+SamplerState ObjSamplerState;
+TextureCube SkyMap;
+
+//////////////
+// TYPEDEFS //
+//////////////
+// This structure is used to send the information we need from the skymaps VS to the skymaps PS.
+// We will only be needing the position and texture coordinates in our PS.
+struct SKYMAP_VS_OUTPUT	// output structure for skymap vertex shader
+{
+	float4 pos : SV_POSITION;
+	float3 texCoord : TEXCOORD;
+};
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Pixel Shader
+////////////////////////////////////////////////////////////////////////////////
+float4 SKYMAP_PS(SKYMAP_VS_OUTPUT input) : SV_Target
+{
+	return SkyMap.Sample(ObjSamplerState, input.texCoord);
+}
