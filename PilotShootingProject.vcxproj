@@ -82,6 +82,8 @@
     <Image Include="data\font.dds" />
     <Image Include="data\Mountain.dds" />
     <Image Include="data\PlayerModel.dds" />
+    <Image Include="data\skymap.dds" />
+    <Image Include="data\skymap2.dds" />
     <Image Include="data\Target.dds" />
   </ItemGroup>
   <ItemGroup>

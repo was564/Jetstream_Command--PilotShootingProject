@@ -200,5 +200,11 @@
     <Image Include="data\font.dds">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="data\skymap2.dds">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\skymap.dds">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

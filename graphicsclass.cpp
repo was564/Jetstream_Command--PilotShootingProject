@@ -12,7 +12,7 @@ GraphicsClass::GraphicsClass()
 	m_EnemyAirCraft = 0;
 	m_TextureShader = 0;
 	m_Target = 0;
-	m_SkyBox = 0;
+	m_SkyboxShader = 0;
 	m_Ground_Mountain = 0;
 	m_SkyboxShader = 0;
 	m_Light = 0;
@@ -59,7 +59,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	// Set the initial position of the camera.
-	m_Camera->SetPosition(0.0f, 30.0f, 0.0f);	// for cube model
+	m_Camera->SetPosition(0.0f, 0.0f, 0.0f);	// for cube model
 //	m_Camera->SetPosition(0.0f, 0.5f, -3.0f);	// for chair model
 	m_Camera->SetRotation(0.0f, 0.0f, 0.0f);
 	
@@ -123,21 +123,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
-	// Initialize the model object.
-	m_SkyBox = new ModelClass;
-	if (!m_SkyBox)
-	{
-		return false;
-	}
-
-	// Initialize the model object.
-	result = m_SkyBox->Initialize(m_D3D->GetDevice(), L"./data/cube.obj", L"./data/Mountain.dds");
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
-		return false;
-	}
-
 	// Create the texture shader object.
 	m_TextureShader = new TextureShaderClass;
 	if(!m_TextureShader)
@@ -158,15 +143,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_SkyboxShader = new SkyBoxShaderClass;
 	if (!m_SkyboxShader)
 	{
-		return false;
-	}
-	
-
-	// Initialize the skybox shader object.
-	result = m_SkyboxShader->Initialize(m_D3D->GetDevice(), hwnd);
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the texture shader object.", L"Error", MB_OK);
 		return false;
 	}
 	
@@ -219,6 +195,18 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
+	m_SkyboxShader = new SkyBoxShaderClass;
+	if (!m_SkyboxShader)
+	{
+		return false;
+	}
+	result = m_SkyboxShader->Initialize(m_D3D->GetDevice(), hwnd);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the text object.", L"Error", MB_OK);
+		return false;
+	}
+
 	return true;
 }
 
@@ -258,11 +246,11 @@ void GraphicsClass::Shutdown()
 	}
 
 	// Release the model object.
-	if (m_SkyBox)
+	if (m_SkyboxShader)
 	{
-		m_SkyBox->Shutdown();
-		delete m_SkyBox;
-		m_SkyBox = 0;
+		m_SkyboxShader->Shutdown();
+		delete m_SkyboxShader;
+		m_SkyboxShader = 0;
 	}
 
 	// Release the model object.
@@ -331,7 +319,7 @@ bool GraphicsClass::Frame(const std::pair<float, float>* mouseMovingValue, const
 
 	bool result;
 
-	static float speed = 10.0f * 0.01f; // 0.01f = 1 / average frame
+	static float speed = 0.3f * 0.01f; // 0.01f = 1 / average frame
 	static float mouseSensibility = 0.1f;
 
 	if (GetKeyDown(DIK_A)) m_Player->Rotate(0.0f, -1.0f, 0.0f);
@@ -397,8 +385,12 @@ bool GraphicsClass::Render()
 		return false;
 	}
 	*/
-	
-	
+
+	result = m_SkyboxShader->Render(m_D3D->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix);
+	if (!result)
+	{
+		return false;
+	}
 
 	groundMatrix = worldMatrix;
 	groundMatrix *= XMMatrixScaling(100.0f, 10.0f, 100.0f);

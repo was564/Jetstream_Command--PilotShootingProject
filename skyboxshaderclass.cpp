@@ -2,15 +2,24 @@
 // Filename: textureshaderclass.cpp
 ////////////////////////////////////////////////////////////////////////////////
 #include "skyboxshaderclass.h"
-
+#include "DDSTextureLoader.h"
 
 SkyBoxShaderClass::SkyBoxShaderClass()
 {
-	m_vertexShader = 0;
-	m_pixelShader = 0;
-	m_layout = 0;
-	m_matrixBuffer = 0;
-	m_sampleState = 0;
+	m_SKYMAP_PS = 0;
+	m_SKYMAP_VS = 0;
+	m_SKYMAP_VS_Buffer = 0;
+	m_SKYMAP_PS_Buffer = 0;
+	m_sphereIndexBuffer = 0;
+	m_sphereVertBuffer = 0;
+	m_Texture = 0;
+	m_smrv = 0;
+
+	m_cbPerObjectBuffer = 0;
+	m_CCWcullMode = 0;
+	m_CubesTexSamplerState = 0;
+	m_DSLessEqual = 0;
+	m_RSCullNone = 0;
 }
 
 
@@ -27,7 +36,11 @@ SkyBoxShaderClass::~SkyBoxShaderClass()
 bool SkyBoxShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
 {
 	bool result;
-
+	sphereWorld = XMMatrixIdentity();
+	result = CreateSphere(10, 10, device);
+	if (!result) {
+		return false;
+	}
 
 	// Initialize the vertex and pixel shaders.
 	result = InitializeShader(device, hwnd, L"./data/skymap.vs", L"./data/skymap.ps");
@@ -49,21 +62,21 @@ void SkyBoxShaderClass::Shutdown()
 }
 
 
-bool SkyBoxShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, XMMATRIX worldMatrix, XMMATRIX viewMatrix,
-	XMMATRIX projectionMatrix, ID3D11ShaderResourceView* texture)
+bool SkyBoxShaderClass::Render(ID3D11DeviceContext* deviceContext, XMMATRIX worldMatrix, XMMATRIX viewMatrix,
+	XMMATRIX projectionMatrix)
 {
 	bool result;
 
 
 	// Set the shader parameters that it will use for rendering.
-	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, texture);
+	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix);
 	if (!result)
 	{
 		return false;
 	}
 
 	// Now render the prepared buffers with the shader.
-	RenderShader(deviceContext, indexCount);
+	RenderShader(deviceContext);
 
 	return true;
 }
@@ -74,22 +87,20 @@ bool SkyBoxShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd,
 {
 	HRESULT result;
 	ID3D10Blob* errorMessage;
-	ID3D10Blob* vertexShaderBuffer;
-	ID3D10Blob* pixelShaderBuffer;
+	/*
 	D3D11_INPUT_ELEMENT_DESC polygonLayout[3];
 	unsigned int numElements;
 	D3D11_BUFFER_DESC matrixBufferDesc;
 	D3D11_SAMPLER_DESC samplerDesc;
-
+	*/
 
 	// Initialize the pointers this function will use to null.
 	errorMessage = 0;
-	vertexShaderBuffer = 0;
-	pixelShaderBuffer = 0;
+	m_SKYMAP_PS_Buffer = 0;
+	m_SKYMAP_VS_Buffer = 0;
 
-	// Compile the vertex shader code.
-	result = D3DCompileFromFile(vsFilename, NULL, NULL, "SKYMAP_VS", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0,
-		&vertexShaderBuffer, &errorMessage);
+	result = D3DCompileFromFile(vsFilename, 0, 0, "SKYMAP_VS", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, 
+		&m_SKYMAP_VS_Buffer, &errorMessage);
 	if (FAILED(result))
 	{
 		// If the shader failed to compile it should have writen something to the error message.
@@ -106,17 +117,16 @@ bool SkyBoxShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd,
 		return false;
 	}
 
-	// Compile the pixel shader code.
-	result = D3DCompileFromFile(psFilename, NULL, NULL, "SKYMAP_PS", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0,
-		&pixelShaderBuffer, &errorMessage);
+	result = D3DCompileFromFile(psFilename, 0, 0, "SKYMAP_PS", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, 
+		&m_SKYMAP_PS_Buffer, &errorMessage);
 	if (FAILED(result))
 	{
 		// If the shader failed to compile it should have writen something to the error message.
 		if (errorMessage)
-		{ 
+		{
 			OutputShaderErrorMessage(errorMessage, hwnd, psFilename);
 		}
-		// If there was  nothing in the error message then it simply could not find the file itself.
+		// If there was nothing in the error message then it simply could not find the shader file itself.
 		else
 		{
 			MessageBox(hwnd, psFilename, L"Missing Shader File", MB_OK);
@@ -124,107 +134,92 @@ bool SkyBoxShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd,
 
 		return false;
 	}
-
 	
 	// Create the vertex shader from the buffer.
-	result = device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &m_vertexShader);
+	result = device->CreateVertexShader(m_SKYMAP_VS_Buffer->GetBufferPointer(), m_SKYMAP_VS_Buffer->GetBufferSize(), NULL, &m_SKYMAP_VS);
 	if (FAILED(result))
 	{
 		return false;
 	}
 
 	// Create the pixel shader from the buffer.
-	result = device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &m_pixelShader);
+	result = device->CreatePixelShader(m_SKYMAP_PS_Buffer->GetBufferPointer(), m_SKYMAP_PS_Buffer->GetBufferSize(), NULL, &m_SKYMAP_PS);
 	if (FAILED(result))
 	{
 		return false;
 	}
 
-	// Create the vertex input layout description.
-	// This setup needs to match the VertexType stucture in the ModelClass and in the shader.
-	polygonLayout[0].SemanticName = "POSITION";
-	polygonLayout[0].SemanticIndex = 0;
-	polygonLayout[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	polygonLayout[0].InputSlot = 0;
-	polygonLayout[0].AlignedByteOffset = 0;
-	polygonLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	polygonLayout[0].InstanceDataStepRate = 0;
-
-	polygonLayout[1].SemanticName = "TEXCOORD";
-	polygonLayout[1].SemanticIndex = 0;
-	polygonLayout[1].Format = DXGI_FORMAT_R32G32_FLOAT;
-	polygonLayout[1].InputSlot = 0;
-	polygonLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	polygonLayout[1].InstanceDataStepRate = 0;
-
-	polygonLayout[2].SemanticName = "NORMAL";
-	polygonLayout[2].SemanticIndex = 0;
-	polygonLayout[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	polygonLayout[2].InputSlot = 0;
-	polygonLayout[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	polygonLayout[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	polygonLayout[2].InstanceDataStepRate = 0;
-
-	// Get a count of the elements in the layout.
-	numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
-
-	// Create the vertex input layout.
-	result = device->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(),
-		&m_layout);
+	result = CreateDDSTextureFromFileEx(device, L"./data/skymap.dds", 0, D3D11_USAGE_IMMUTABLE, D3D11_BIND_SHADER_RESOURCE,
+		0, D3D11_RESOURCE_MISC_TEXTURECUBE, false, (ID3D11Resource**)&m_Texture, nullptr);
 	if (FAILED(result))
 	{
 		return false;
 	}
 
-	// Release the vertex shader buffer and pixel shader buffer since they are no longer needed.
-	vertexShaderBuffer->Release();
-	vertexShaderBuffer = 0;
+	D3D11_TEXTURE2D_DESC textureDesc;
+	m_Texture->GetDesc(&textureDesc);
 
-	pixelShaderBuffer->Release();
-	pixelShaderBuffer = 0;
+	D3D11_SHADER_RESOURCE_VIEW_DESC viewDesc;
+	viewDesc.Format = textureDesc.Format;
+	viewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
+	viewDesc.TextureCube.MipLevels = textureDesc.MipLevels;
+	viewDesc.TextureCube.MostDetailedMip = 0;
 
-	// Setup the description of the dynamic matrix constant buffer that is in the vertex shader.
-	matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	matrixBufferDesc.ByteWidth = sizeof(MatrixBufferType);
-	matrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	matrixBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	matrixBufferDesc.MiscFlags = 0;
-	matrixBufferDesc.StructureByteStride = 0;
-
-	// Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
-	result = device->CreateBuffer(&matrixBufferDesc, NULL, &m_matrixBuffer);
+	result = device->CreateShaderResourceView(m_Texture, &viewDesc, &m_smrv);
 	if (FAILED(result))
 	{
 		return false;
 	}
 
-	// Create a texture sampler state description.
-	// The sampler state description is setup here and then can be passed to the pixel shader after. 
-	// The most important element of the texture sampler description is Filter. Filter will determine 
-	// how it decides which pixels will be used or combined to create the final look of the texture on
-	// the polygon face. In the example here we use D3D11_FILTER_MIN_MAG_MIP_LINEAR which is more 
-	// expensive in terms of processing but gives the best visual result. It tells the sampler to use 
-	// linear interpolation for minification, magnification, and mip-level sampling.
-	// AddressUand AddressV are set to Wrap which ensures that the coordinates stay between 0.0f and 
-	// 1.0f. Anything outside of that wraps around and is placed between 0.0f and 1.0f. All other 
-	// settings for the sampler state description are defaults.
-	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	samplerDesc.MipLODBias = 0.0f;
-	samplerDesc.MaxAnisotropy = 1;
-	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-	samplerDesc.BorderColor[0] = 0;
-	samplerDesc.BorderColor[1] = 0;
-	samplerDesc.BorderColor[2] = 0;
-	samplerDesc.BorderColor[3] = 0;
-	samplerDesc.MinLOD = 0;
-	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	D3D11_RASTERIZER_DESC cmdesc;
 
-	// Create the texture sampler state.
-	result = device->CreateSamplerState(&samplerDesc, &m_sampleState);
+	ZeroMemory(&cmdesc, sizeof(D3D11_RASTERIZER_DESC));
+	cmdesc.FillMode = D3D11_FILL_SOLID;
+	cmdesc.CullMode = D3D11_CULL_BACK;
+	cmdesc.FrontCounterClockwise = true;
+	result = device->CreateRasterizerState(&cmdesc, &m_CCWcullMode);
+	if (FAILED(result))
+	{
+		return false;
+	}
+	cmdesc.FrontCounterClockwise = false;
+
+	//Create the buffer to send to the cbuffer in effect file
+	D3D11_BUFFER_DESC cbbd;
+	ZeroMemory(&cbbd, sizeof(D3D11_BUFFER_DESC));
+
+	cbbd.Usage = D3D11_USAGE_DEFAULT;
+	cbbd.ByteWidth = sizeof(cbPerObject);
+	cbbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbbd.CPUAccessFlags = 0;
+	cbbd.MiscFlags = 0;
+
+	result = device->CreateBuffer(&cbbd, NULL, &m_cbPerObjectBuffer);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	result = device->CreateRasterizerState(&cmdesc, &m_CWcullMode);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	cmdesc.CullMode = D3D11_CULL_NONE;
+	result = device->CreateRasterizerState(&cmdesc, &m_RSCullNone);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	D3D11_DEPTH_STENCIL_DESC dssDesc;
+	ZeroMemory(&dssDesc, sizeof(D3D11_DEPTH_STENCIL_DESC));
+	dssDesc.DepthEnable = true;
+	dssDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	dssDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+
+	result = device->CreateDepthStencilState(&dssDesc, &m_DSLessEqual);
 	if (FAILED(result))
 	{
 		return false;
@@ -236,41 +231,80 @@ bool SkyBoxShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd,
 
 void SkyBoxShaderClass::ShutdownShader()
 {
-	// Release the sampler state.
-	if (m_sampleState)
+	if (m_SKYMAP_VS_Buffer)
 	{
-		m_sampleState->Release();
-		m_sampleState = 0;
+		m_SKYMAP_VS_Buffer->Release();
+		m_SKYMAP_VS_Buffer = 0;
 	}
 
-	// Release the matrix constant buffer.
-	if (m_matrixBuffer)
+	if (m_SKYMAP_PS_Buffer)
 	{
-		m_matrixBuffer->Release();
-		m_matrixBuffer = 0;
-	}
-
-	// Release the layout.
-	if (m_layout)
-	{
-		m_layout->Release();
-		m_layout = 0;
+		m_SKYMAP_PS_Buffer->Release();
+		m_SKYMAP_PS_Buffer = 0;
 	}
 
 	// Release the pixel shader.
-	if (m_pixelShader)
+	if (m_SKYMAP_PS)
 	{
-		m_pixelShader->Release();
-		m_pixelShader = 0;
+		m_SKYMAP_PS->Release();
+		m_SKYMAP_PS = 0;
 	}
 
 	// Release the vertex shader.
-	if (m_vertexShader)
+	if (m_SKYMAP_VS)
 	{
-		m_vertexShader->Release();
-		m_vertexShader = 0;
+		m_SKYMAP_VS->Release();
+		m_SKYMAP_VS = 0;
 	}
 
+	if(m_smrv)
+	{
+		m_smrv->Release();
+		m_smrv = 0;
+	}
+
+	if (m_sphereIndexBuffer)
+	{
+		m_sphereIndexBuffer->Release();
+		m_sphereIndexBuffer = 0;
+	}
+
+	if (m_sphereVertBuffer)
+	{
+		m_sphereVertBuffer->Release();
+		m_sphereVertBuffer = 0;
+	}
+
+	if (m_Texture)
+	{
+		m_Texture->Release();
+		m_Texture = 0;
+	}
+	if (m_cbPerObjectBuffer)
+	{
+		m_cbPerObjectBuffer->Release();
+		m_cbPerObjectBuffer = 0;
+	}
+	if (m_CCWcullMode)
+	{
+		m_CCWcullMode->Release();
+		m_CCWcullMode = 0;
+	}
+	if (m_CubesTexSamplerState)
+	{
+		m_CubesTexSamplerState->Release();
+		m_CubesTexSamplerState = 0;
+	}
+	if (m_DSLessEqual)
+	{
+		m_DSLessEqual->Release();
+		m_DSLessEqual = 0;
+	}
+	if (m_RSCullNone)
+	{
+		m_RSCullNone->Release();
+		m_RSCullNone = 0;
+	}
 	return;
 }
 
@@ -313,65 +347,184 @@ void SkyBoxShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND 
 
 
 bool SkyBoxShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, XMMATRIX worldMatrix, XMMATRIX viewMatrix,
-	XMMATRIX projectionMatrix, ID3D11ShaderResourceView* texture)
+	XMMATRIX projectionMatrix)
 {
 	HRESULT result;
-	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	MatrixBufferType* dataPtr;
-	unsigned int bufferNumber;
-
+	//Set the grounds vertex buffer
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
+	cbPerObject cbPerObj;
 
 	// Transpose the matrices to prepare them for the shader.
 	worldMatrix = XMMatrixTranspose(worldMatrix);
 	viewMatrix = XMMatrixTranspose(viewMatrix);
 	projectionMatrix = XMMatrixTranspose(projectionMatrix);
 
-	// Lock the constant buffer so it can be written to.
-	result = deviceContext->Map(m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	if (FAILED(result))
-	{
-		return false;
-	}
+	// Set the spheres index buffer
+	deviceContext->IASetIndexBuffer(m_sphereIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	// Set the spheres vertex buffer
+	deviceContext->IASetVertexBuffers(0, 1, &m_sphereVertBuffer, &stride, &offset);
 
-	// Get a pointer to the data in the constant buffer.
-	dataPtr = (MatrixBufferType*)mappedResource.pData;
-
-	// Copy the matrices into the constant buffer.
-	dataPtr->world = worldMatrix;
-	dataPtr->view = viewMatrix;
-	dataPtr->projection = projectionMatrix;
-
-	// Unlock the constant buffer.
-	deviceContext->Unmap(m_matrixBuffer, 0);
-
-	// Set the position of the constant buffer in the vertex shader.
-	bufferNumber = 0;
-
-	// Now set the constant buffer in the vertex shader with the updated values.
-	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
-
-	// Set shader texture resource in the pixel shader.
-	deviceContext->PSSetShaderResources(0, 1, &texture);
+	// Set the world view projection matrix and send it to the constant buffer in effect file
+	XMMATRIX WVP = sphereWorld * viewMatrix * projectionMatrix;
+	cbPerObj.WVP = XMMatrixTranspose(WVP);
+	cbPerObj.World = XMMatrixTranspose(sphereWorld);
+	deviceContext->UpdateSubresource(m_cbPerObjectBuffer, 0, NULL, &cbPerObj, 0, 0);
+	deviceContext->VSSetConstantBuffers(0, 1, &m_cbPerObjectBuffer);
+	// Send our skymap resource view to pixel shader
+	deviceContext->PSSetShaderResources(0, 1, &m_smrv);
+	deviceContext->PSSetSamplers(0, 1, &m_CubesTexSamplerState);
 
 	return true;
 }
 
 
-void SkyBoxShaderClass::RenderShader(ID3D11DeviceContext* deviceContext, int indexCount)
+void SkyBoxShaderClass::RenderShader(ID3D11DeviceContext* deviceContext)
 {
 
-	// Set the vertex input layout.
-	deviceContext->IASetInputLayout(m_layout);
-
-	// Set the vertex and pixel shaders that will be used to render this triangle.
-	deviceContext->VSSetShader(m_vertexShader, NULL, 0);
-	deviceContext->PSSetShader(m_pixelShader, NULL, 0);
-
-	// Set the sampler state in the pixel shader.
-	deviceContext->PSSetSamplers(0, 1, &m_sampleState);
-
-	// Render the triangle.
-	deviceContext->DrawIndexed(indexCount, 0, 0);
+	// Set the new VS and PS shaders
+	deviceContext->VSSetShader(m_SKYMAP_VS, 0, 0);
+	deviceContext->PSSetShader(m_SKYMAP_PS, 0, 0);
+	// Set the new depth/stencil and RS states
+	deviceContext->OMSetDepthStencilState(m_DSLessEqual, 0);
+	deviceContext->RSSetState(m_RSCullNone);
+	deviceContext->DrawIndexed(NumSphereFaces * 3, 0, 0);
 
 	return;
+}
+
+bool SkyBoxShaderClass::CreateSphere(int LatLines, int LongLines, ID3D11Device* device)
+{
+	HRESULT result;
+
+	NumSphereVertices = ((LatLines - 2) * LongLines) + 2;
+	NumSphereFaces = ((LatLines - 3) * (LongLines) * 2) + (LongLines * 2);
+
+	float sphereYaw = 0.0f;
+	float spherePitch = 0.0f;
+
+	vertices.resize(NumSphereVertices);
+
+	XMVECTOR currVertPos = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+
+	vertices[0].pos.x = 0.0f;
+	vertices[0].pos.y = 0.0f;
+	vertices[0].pos.z = 1.0f;
+
+	XMMATRIX rotationX, rotationY;
+
+	for (DWORD i = 0; i < DWORD(LatLines - 2); ++i)
+	{
+		spherePitch = (float)(i + 1) * (3.14f / (float)(LatLines - 1));
+		rotationX = XMMatrixRotationX(spherePitch);
+		for (DWORD j = 0; j < DWORD(LongLines); ++j)
+		{
+			sphereYaw = (float)j * (6.28f / (float)(LongLines));
+			rotationY = XMMatrixRotationZ(sphereYaw);
+			currVertPos = XMVector3TransformNormal(XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), (rotationX * rotationY));
+			currVertPos = XMVector3Normalize(currVertPos);
+			vertices[i * LongLines + j + 1].pos.x = XMVectorGetX(currVertPos);
+			vertices[i * LongLines + j + 1].pos.y = XMVectorGetY(currVertPos);
+			vertices[i * LongLines + j + 1].pos.z = XMVectorGetZ(currVertPos);
+		}
+	}
+
+	vertices[NumSphereVertices - 1].pos.x = 0.0f;
+	vertices[NumSphereVertices - 1].pos.y = 0.0f;
+	vertices[NumSphereVertices - 1].pos.z = -1.0f;
+
+	
+	D3D11_BUFFER_DESC vertexBufferDesc;
+	ZeroMemory( &vertexBufferDesc, sizeof(vertexBufferDesc) );
+
+	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	vertexBufferDesc.ByteWidth = sizeof( Vertex ) * NumSphereVertices;
+	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	vertexBufferDesc.CPUAccessFlags = 0;
+	vertexBufferDesc.MiscFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA vertexBufferData;
+
+	ZeroMemory( &vertexBufferData, sizeof(vertexBufferData) );
+	vertexBufferData.pSysMem = &vertices[0];
+	result = device->CreateBuffer( &vertexBufferDesc, &vertexBufferData, &m_sphereVertBuffer);
+	if (FAILED(result)) {
+		return false;
+	}
+	
+
+	indices.resize(NumSphereFaces * 3);
+
+	int k = 0;
+	for (DWORD l = 0; l < DWORD(LongLines - 1); ++l)
+	{
+		indices[k] = 0;
+		indices[k + 1] = l + 1;
+		indices[k + 2] = l + 2;
+		k += 3;
+	}
+
+	indices[k] = 0;
+	indices[k + 1] = LongLines;
+	indices[k + 2] = 1;
+	k += 3;
+
+	for (DWORD i = 0; i < DWORD(LatLines - 3); ++i)
+	{
+		for (DWORD j = 0; j < DWORD(LongLines - 1); ++j)
+		{
+			indices[k] = i * LongLines + j + 1;
+			indices[k + 1] = i * LongLines + j + 2;
+			indices[k + 2] = (i + 1) * LongLines + j + 1;
+
+			indices[k + 3] = (i + 1) * LongLines + j + 1;
+			indices[k + 4] = i * LongLines + j + 2;
+			indices[k + 5] = (i + 1) * LongLines + j + 2;
+
+			k += 6; // next quad
+		}
+
+		indices[k] = (i * LongLines) + LongLines;
+		indices[k + 1] = (i * LongLines) + 1;
+		indices[k + 2] = ((i + 1) * LongLines) + LongLines;
+
+		indices[k + 3] = ((i + 1) * LongLines) + LongLines;
+		indices[k + 4] = (i * LongLines) + 1;
+		indices[k + 5] = ((i + 1) * LongLines) + 1;
+
+		k += 6;
+	}
+
+	for (DWORD l = 0; l < (DWORD)(LongLines - 1); ++l)
+	{
+		indices[k] = NumSphereVertices - 1;
+		indices[k + 1] = (NumSphereVertices - 1) - (l + 1);
+		indices[k + 2] = (NumSphereVertices - 1) - (l + 2);
+		k += 3;
+	}
+
+	indices[k] = NumSphereVertices - 1;
+	indices[k + 1] = (NumSphereVertices - 1) - LongLines;
+	indices[k + 2] = NumSphereVertices - 2;
+
+	
+	D3D11_BUFFER_DESC indexBufferDesc;
+	ZeroMemory( &indexBufferDesc, sizeof(indexBufferDesc) );
+
+	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	indexBufferDesc.ByteWidth = sizeof(DWORD) * NumSphereFaces * 3;
+	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	indexBufferDesc.CPUAccessFlags = 0;
+	indexBufferDesc.MiscFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA iinitData;
+
+	iinitData.pSysMem = &indices[0];
+	result = device->CreateBuffer(&indexBufferDesc, &iinitData, &m_sphereIndexBuffer);
+	if(FAILED(result))
+	{
+		return false;
+	}
+	
+	return true;
 }

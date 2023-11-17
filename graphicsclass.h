@@ -59,8 +59,6 @@ private:
 	LightShaderClass* m_LightShader;
 	LightClass* m_Light;
 
-	ModelClass* m_SkyBox;
-
 	TextureShaderClass* m_TextureShader;
 
 	SkyBoxShaderClass* m_SkyboxShader;
