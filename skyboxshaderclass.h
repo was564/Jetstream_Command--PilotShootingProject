@@ -19,6 +19,8 @@
 #include <vector>
 #include <fstream>
 
+#include "cameraclass.h"
+
 using namespace std;
 using namespace DirectX;
 
@@ -53,12 +55,13 @@ public:
 	SkyBoxShaderClass(const SkyBoxShaderClass&);
 	~SkyBoxShaderClass();
 
-	bool Initialize(ID3D11Device*, HWND);
+	bool Initialize(ID3D11Device*, HWND, CameraClass*, IDXGISwapChain*);
 	void Shutdown();
 	bool Render(ID3D11DeviceContext*, XMMATRIX, XMMATRIX, XMMATRIX);
 
 private:
 	bool InitializeShader(ID3D11Device*, HWND, const WCHAR*, const WCHAR*);
+	bool InitD2D_D3D101_DWrite(IDXGIAdapter1* Adapter);
 	void ShutdownShader();
 	void OutputShaderErrorMessage(ID3D10Blob*, HWND, const WCHAR*);
 
@@ -79,8 +82,6 @@ private:
 	int NumSphereVertices;
 	int NumSphereFaces;
 
-	XMMATRIX sphereWorld;
-
 	std::vector<Vertex> vertices;
 	std::vector<DWORD> indices;
 
@@ -92,10 +93,15 @@ private:
 	ID3D11RasterizerState* m_CWcullMode;
 	ID3D11RasterizerState* m_RSCullNone;
 	ID3D11DepthStencilState* m_DSLessEqual;
+	ID3D11DepthStencilView* m_depthStencilView;
+	ID3D11RenderTargetView* m_renderTargetView;
+	IDXGISwapChain* m_swapChain;
+	ID3D11Texture2D* m_BackBuffer11;
 	// ID3D11InputLayout* m_layout;
 	// ID3D11Buffer* m_matrixBuffer;
 	// ID3D11SamplerState* m_sampleState;
 
+	CameraClass* m_Camera;
 };
 
 #endif

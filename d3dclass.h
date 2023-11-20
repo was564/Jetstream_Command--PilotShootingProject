@@ -54,6 +54,7 @@ public:
 
 	void TurnOnAlphaBlending();
 	void TurnOffAlphaBlending();
+	IDXGISwapChain* GetSwapChain();
 
 private:
 	bool m_vsync_enabled;

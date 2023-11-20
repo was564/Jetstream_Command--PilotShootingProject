@@ -537,3 +537,9 @@ void D3DClass::TurnOffAlphaBlending()
 
 	return;
 }
+
+IDXGISwapChain* D3DClass::GetSwapChain()
+{
+	return m_swapChain;
+}
+

@@ -33,10 +33,11 @@ SkyBoxShaderClass::~SkyBoxShaderClass()
 }
 
 
-bool SkyBoxShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
+bool SkyBoxShaderClass::Initialize(ID3D11Device* device, HWND hwnd, CameraClass* camera, IDXGISwapChain* swapChain)
 {
 	bool result;
-	sphereWorld = XMMatrixIdentity();
+	m_Camera = camera;
+	m_swapChain = swapChain;
 	result = CreateSphere(10, 10, device);
 	if (!result) {
 		return false;
@@ -171,6 +172,7 @@ bool SkyBoxShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd,
 		return false;
 	}
 
+
 	D3D11_RASTERIZER_DESC cmdesc;
 
 	ZeroMemory(&cmdesc, sizeof(D3D11_RASTERIZER_DESC));
@@ -220,6 +222,40 @@ bool SkyBoxShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd,
 	dssDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
 
 	result = device->CreateDepthStencilState(&dssDesc, &m_DSLessEqual);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	//Describe our Depth/Stencil Buffer
+	D3D11_TEXTURE2D_DESC depthStencilDesc;
+	ID3D11Texture2D* depthStencilBuffer;
+
+	depthStencilDesc.Width = 1600;
+	depthStencilDesc.Height = 900;
+	depthStencilDesc.MipLevels = 1;
+	depthStencilDesc.ArraySize = 1;
+	depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthStencilDesc.SampleDesc.Count = 1;
+	depthStencilDesc.SampleDesc.Quality = 0;
+	depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;
+	depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	depthStencilDesc.CPUAccessFlags = 0;
+	depthStencilDesc.MiscFlags = 0;
+	
+
+	//Create the Depth/Stencil View
+	device->CreateTexture2D(&depthStencilDesc, NULL, &depthStencilBuffer);
+	device->CreateDepthStencilView(depthStencilBuffer, NULL, &m_depthStencilView);
+
+	//Create our BackBuffer and Render Target
+	result = m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&m_BackBuffer11);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	result = device->CreateRenderTargetView(m_BackBuffer11, NULL, &m_renderTargetView);
 	if (FAILED(result))
 	{
 		return false;
@@ -355,10 +391,23 @@ bool SkyBoxShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, 
 	UINT offset = 0;
 	cbPerObject cbPerObj;
 
+	XMMATRIX sphereWorld = XMMatrixIdentity();
+	XMFLOAT3 cameraPosition = m_Camera->GetPosition();
+	sphereWorld *= XMMatrixScaling(10.0f, 10.0f, 10.0f);
+	sphereWorld *= XMMatrixTranslationFromVector(XMLoadFloat3(&cameraPosition));
+
 	// Transpose the matrices to prepare them for the shader.
 	worldMatrix = XMMatrixTranspose(worldMatrix);
 	viewMatrix = XMMatrixTranspose(viewMatrix);
 	projectionMatrix = XMMatrixTranspose(projectionMatrix);
+
+	deviceContext->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+	//Set our Render Target
+	deviceContext->OMSetRenderTargets(1, &m_renderTargetView, m_depthStencilView);
+
+	//Set the default blend state (no blending) for opaque objects
+	deviceContext->OMSetBlendState(0, 0, 0xffffffff);
 
 	// Set the spheres index buffer
 	deviceContext->IASetIndexBuffer(m_sphereIndexBuffer, DXGI_FORMAT_R32_UINT, 0);

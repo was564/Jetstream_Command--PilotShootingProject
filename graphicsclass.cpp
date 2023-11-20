@@ -200,7 +200,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	{
 		return false;
 	}
-	result = m_SkyboxShader->Initialize(m_D3D->GetDevice(), hwnd);
+	result = m_SkyboxShader->Initialize(m_D3D->GetDevice(), hwnd, m_Camera, m_D3D->GetSwapChain());
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the text object.", L"Error", MB_OK);
@@ -372,20 +372,7 @@ bool GraphicsClass::Render()
 
 	m_D3D->GetOrthoMatrix(orthoMatrix);
 
-	/*
-	boxMatrix = worldMatrix;
-	boxMatrix *= XMMatrixScaling(100.0f, 100.0f, 100.0f);
-	// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	m_SkyBox->Render(m_D3D->GetDeviceContext());
-	// Render the model using the texture shader.
-	result = m_SkyboxShader->Render(m_D3D->GetDeviceContext(), m_SkyBox->GetIndexCount(),
-		boxMatrix, viewMatrix, projectionMatrix, m_SkyBox->GetTexture());
-	if (!result)
-	{
-		return false;
-	}
-	*/
-
+	
 	result = m_SkyboxShader->Render(m_D3D->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix);
 	if (!result)
 	{
