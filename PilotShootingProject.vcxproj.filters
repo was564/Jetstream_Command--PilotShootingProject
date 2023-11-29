@@ -81,6 +81,9 @@
     <ClInclude Include="timerclass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="fireshaderclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cameraclass.cpp">
@@ -146,6 +149,9 @@
     <ClCompile Include="timerclass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="fireshaderclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\PlayerModel.mtl">
@@ -193,6 +199,13 @@
     <None Include="data\fog.ps">
       <Filter>Resource Files\ShaderFile</Filter>
     </None>
+    <None Include="data\fire.vs">
+      <Filter>Resource Files\ShaderFile</Filter>
+    </None>
+    <None Include="data\fire.ps">
+      <Filter>Resource Files\ShaderFile</Filter>
+    </None>
+    <None Include=".editorconfig" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="data\PlayerModel.obj">
@@ -211,6 +224,9 @@
       <Filter>Resource Files</Filter>
     </Text>
     <Text Include="data\fontdata.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="data\square.txt">
       <Filter>Resource Files</Filter>
     </Text>
   </ItemGroup>
@@ -234,6 +250,15 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="data\skymap.dds">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\fire01.dds">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\noise01.dds">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\alpha01.dds">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

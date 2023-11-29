@@ -65,6 +65,20 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 //	m_Camera->SetPosition(0.0f, 0.5f, -3.0f);	// for chair model
 	m_Camera->SetRotation(0.0f, 0.0f, 0.0f);
 	
+	m_Cube = new ModelClass;
+	if (!m_Cube)
+	{
+		return false;
+	}
+
+	// Initialize the model object.
+	result = m_Cube->Initialize(m_D3D->GetDevice(), L"./data/cube.obj", L"./data/Mountain.dds");
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
+		return false;
+	}
+
 	// Create the model object.
 	m_Player = new ModelClass;
 	if(!m_Player)
@@ -222,6 +236,19 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		MessageBox(hwnd, L"Could not initialize the fog shader object.", L"Error", MB_OK);
 		return false;
 	}
+
+    m_FireShader = new FireShaderClass;
+    if (!m_FireShader)
+    {
+        return false;
+    }
+    // Initialize the fog shader object.
+    result = m_FireShader->Initialize(m_D3D->GetDevice(), hwnd);
+    if (!result)
+    {
+        MessageBox(hwnd, L"Could not initialize the fire shader object.", L"Error", MB_OK);
+        return false;
+    }
 
 	return true;
 }
@@ -542,13 +569,56 @@ bool GraphicsClass::Render()
 	{
 		return false;
 	}
-
-
+	
 	// Turn the Z buffer back on now that all 2D rendering has completed.
 	m_D3D->TurnZBufferOn();
 	// Turn off alpha blending after rendering the text.
 	m_D3D->TurnOffAlphaBlending();
 	
+
+	// FireShader
+	XMFLOAT3 scrollSpeeds, scales;
+	XMFLOAT2 distortion1, distortion2, distortion3;
+	float distortionScale, distortionBias;
+	static float frameTime = 0.0f;
+
+	// Increment the frame time counter.
+	frameTime += 0.01f;
+	if (frameTime > 1000.0f)
+	{
+		frameTime = 0.0f;
+	}
+
+	// Set the three scrolling speeds for the three different noise textures.
+	scrollSpeeds = XMFLOAT3(1.3f, 2.1f, 2.3f);
+
+	// Set the three scales which will be used to create the three different noise octave textures.
+	scales = XMFLOAT3(1.0f, 2.0f, 3.0f);
+
+	// Set the three different x and y distortion factors for the three different noise textures.
+	distortion1 = XMFLOAT2(0.1f, 0.2f);
+	distortion2 = XMFLOAT2(0.1f, 0.3f);
+	distortion3 = XMFLOAT2(0.1f, 0.1f);
+
+	// The the scale and bias of the texture coordinate sampling perturbation.
+	distortionScale = 0.8f;
+	distortionBias = 0.5f;
+
+	m_D3D->TurnOnAlphaBlending();
+
+    m_Cube->Render(m_D3D->GetDeviceContext());
+
+    // Render the square model using the fire shader.
+    result = m_FireShader->Render(m_D3D->GetDeviceContext(), m_Cube->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+        m_Cube->GetTexture1(), m_Cube->GetTexture2(), m_Cube->GetTexture3(), frameTime, scrollSpeeds,
+        scales, distortion1, distortion2, distortion3, distortionScale, distortionBias);
+    if (!result)
+    {
+        return false;
+    }
+
+    // Turn off alpha blending.
+    m_D3D->TurnOffAlphaBlending();
 
 	// Present the rendered scene to the screen.
 	m_D3D->EndScene();

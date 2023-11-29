@@ -54,6 +54,7 @@ public:
 	~ModelClass();
 
 	bool Initialize(ID3D11Device*, const WCHAR*, const WCHAR*);
+    
 	void Shutdown();
 	void Render(ID3D11DeviceContext*);
 	
@@ -63,6 +64,9 @@ public:
 	const XMVECTOR& GetForward();
 	int GetIndexCount();
 	ID3D11ShaderResourceView* GetTexture();
+    ID3D11ShaderResourceView* GetTexture1();
+    ID3D11ShaderResourceView* GetTexture2();
+    ID3D11ShaderResourceView* GetTexture3();
 
 	bool LoadModel(const WCHAR*);
 	void ReleaseModel();
@@ -76,12 +80,17 @@ private:
 	void RenderBuffers(ID3D11DeviceContext*);
 
 	bool LoadTexture(ID3D11Device*, const WCHAR*);
+    bool LoadTextures(ID3D11Device*, const WCHAR*, const WCHAR*, const WCHAR*);
 	void ReleaseTexture();
 
 private:
 	ID3D11Buffer *m_vertexBuffer, *m_indexBuffer;
 	int m_vertexCount, m_indexCount, m_textureCount, m_normalCount, m_faceCount;
 	TextureClass* m_Texture;
+    // for FireModel
+    TextureClass* m_Texture1;
+    TextureClass* m_Texture2;
+    TextureClass* m_Texture3;
 
 	ModelType* m_model;
 

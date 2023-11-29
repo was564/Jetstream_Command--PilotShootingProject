@@ -25,6 +25,7 @@
     <ClInclude Include="cpuclass.h" />
     <ClInclude Include="d3dclass.h" />
     <ClInclude Include="DDSTextureLoader.h" />
+    <ClInclude Include="fireshaderclass.h" />
     <ClInclude Include="fogshaderclass.h" />
     <ClInclude Include="fontclass.h" />
     <ClInclude Include="fontshaderclass.h" />
@@ -47,6 +48,7 @@
     <ClCompile Include="cpuclass.cpp" />
     <ClCompile Include="d3dclass.cpp" />
     <ClCompile Include="DDSTextureLoader.cpp" />
+    <ClCompile Include="fireshaderclass.cpp" />
     <ClCompile Include="fogshaderclass.cpp" />
     <ClCompile Include="fontclass.cpp" />
     <ClCompile Include="fontshaderclass.cpp" />
@@ -65,9 +67,12 @@
     <ClCompile Include="timerclass.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include=".editorconfig" />
     <None Include="data\color.ps" />
     <None Include="data\color.vs" />
     <None Include="data\EnemyAirCraft.mtl" />
+    <None Include="data\fire.ps" />
+    <None Include="data\fire.vs" />
     <None Include="data\fog.ps" />
     <None Include="data\fog.vs" />
     <None Include="data\font.ps" />
@@ -88,9 +93,12 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
+    <Image Include="data\alpha01.dds" />
     <Image Include="data\EnemyAirCraft.dds" />
+    <Image Include="data\fire01.dds" />
     <Image Include="data\font.dds" />
     <Image Include="data\Mountain.dds" />
+    <Image Include="data\noise01.dds" />
     <Image Include="data\PlayerModel.dds" />
     <Image Include="data\skymap.dds" />
     <Image Include="data\skymap2.dds" />
@@ -102,6 +110,7 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
+    <Text Include="data\square.txt" />
     <Text Include="data\Target.obj">
       <FileType>Document</FileType>
     </Text>

@@ -59,6 +59,12 @@ bool ModelClass::Initialize(ID3D11Device* device, const WCHAR* modelFilename, co
 	m_modelRight = DefaultRight;
 	m_modelUp = XMVector3Cross(m_modelForward, m_modelRight);
 
+    //for fire Shader
+    result = LoadTextures(device, L"./data/fire01.dds", L"./data/noise01.dds", L"./data/alpha01.dds");
+    if (!result)
+    {
+        return false;
+    }
 	return true;
 }
 
@@ -124,6 +130,23 @@ int ModelClass::GetIndexCount()
 ID3D11ShaderResourceView* ModelClass::GetTexture()
 {
 	return m_Texture->GetTexture();
+}
+
+ID3D11ShaderResourceView* ModelClass::GetTexture1()
+{
+    return m_Texture1->GetTexture();
+}
+
+
+ID3D11ShaderResourceView* ModelClass::GetTexture2()
+{
+    return m_Texture2->GetTexture();
+}
+
+
+ID3D11ShaderResourceView* ModelClass::GetTexture3()
+{
+    return m_Texture3->GetTexture();
 }
 
 
@@ -278,6 +301,55 @@ bool ModelClass::LoadTexture(ID3D11Device* device, const WCHAR* filename)
 	return true;
 }
 
+bool ModelClass::LoadTextures(ID3D11Device* device, const WCHAR* textureFilename1, const WCHAR* textureFilename2, const WCHAR* textureFilename3)
+{
+    bool result;
+
+
+    // Create the texture object.
+    m_Texture1 = new TextureClass;
+    if (!m_Texture1)
+    {
+        return false;
+    }
+
+    // Initialize the texture object.
+    result = m_Texture1->Initialize(device, textureFilename1);
+    if (!result)
+    {
+        return false;
+    }
+
+    // Create the texture object.
+    m_Texture2 = new TextureClass;
+    if (!m_Texture2)
+    {
+        return false;
+    }
+
+    // Initialize the texture object.
+    result = m_Texture2->Initialize(device, textureFilename2);
+    if (!result)
+    {
+        return false;
+    }
+
+    // Create the texture object.
+    m_Texture3 = new TextureClass;
+    if (!m_Texture3)
+    {
+        return false;
+    }
+
+    // Initialize the texture object.
+    result = m_Texture3->Initialize(device, textureFilename3);
+    if (!result)
+    {
+        return false;
+    }
+
+    return true;
+}
 
 void ModelClass::ReleaseTexture()
 {

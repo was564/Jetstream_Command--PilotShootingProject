@@ -17,6 +17,7 @@
 #include "lightclass.h"
 #include "textclass.h"
 #include "fogshaderclass.h"
+#include "fireshaderclass.h"
 #include <dinput.h>
 
 
@@ -56,6 +57,7 @@ private:
 	ModelClass* m_EnemyAirCraft;
 	ModelClass* m_Target;
 	ModelClass* m_Ground_Mountain;
+	ModelClass* m_Cube;
 
 	LightShaderClass* m_LightShader;
 	LightClass* m_Light;
@@ -64,6 +66,8 @@ private:
 
 	SkyBoxShaderClass* m_SkyboxShader;
 	FogShaderClass* m_FogShader;
+	FireShaderClass* m_FireShader;
+
 
 	TextClass* m_Text;
 };
