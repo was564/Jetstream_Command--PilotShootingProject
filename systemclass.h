@@ -22,6 +22,9 @@
 ///////////////////////
 #include "inputclass.h"
 #include "graphicsclass.h"
+#include "fpsclass.h"
+#include "cpuclass.h"
+#include "timerclass.h"
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -50,8 +53,15 @@ private:
 	HINSTANCE m_hinstance;
 	HWND m_hwnd;
 
+	int m_screenWidth = 800;
+	int m_screenHeight = 600;
+
 	InputClass* m_Input;
 	GraphicsClass* m_Graphics;
+
+	FpsClass* m_Fps;
+	CpuClass* m_Cpu;
+	TimerClass* m_Timer;
 };
 
 

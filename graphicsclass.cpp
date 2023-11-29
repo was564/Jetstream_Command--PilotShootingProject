@@ -330,7 +330,8 @@ void GraphicsClass::Shutdown()
 
 
 // how to use: mouseMovingValue (lx, ly), keyboard[ key ]
-bool GraphicsClass::Frame(const std::pair<float, float>* mouseMovingValue, const BYTE* keyboardState)
+bool GraphicsClass::Frame(const std::pair<float, float>* mouseMovingValue, const BYTE* keyboardState, 
+	int fps, int cpu, float frameTime)
 {
 	#define GetKeyDown(key) keyboardState[key] & 0x80
 
@@ -355,6 +356,21 @@ bool GraphicsClass::Frame(const std::pair<float, float>* mouseMovingValue, const
 		mouseMovingValue->first * mouseSensibility,
 		0.0f);
 
+
+	// Set the frames per second.
+	result = m_Text->SetFps(fps, m_D3D->GetDeviceContext());
+	if (!result)
+	{
+		return false;
+	}
+
+	// Set the cpu usage.
+	result = m_Text->SetCpu(cpu, m_D3D->GetDeviceContext());
+	if (!result)
+	{
+		return false;
+	}
+
 	// Render the graphics scene.
 	result = Render();
 	if(!result)
@@ -376,6 +392,7 @@ bool GraphicsClass::Render()
 
 	rotationYValue += 0.01f;
 
+	int polygonCount = 0;
 	float fogColor, fogStart, fogEnd;
 	// Set the color of the fog to grey.
 	fogColor = 0.2f;
@@ -409,7 +426,7 @@ bool GraphicsClass::Render()
 	m_D3D->TurnOffCullNone();
 
 	groundMatrix = worldMatrix;
-	groundMatrix *= XMMatrixScaling(60.0f, 10.0f, 60.0f);
+	groundMatrix *= XMMatrixScaling(30.0f, 10.0f, 30.0f);
 	groundMatrix *= XMMatrixTranslation(0.0f, -40.0f, 0.0f);
 	m_Ground_Mountain->Render(m_D3D->GetDeviceContext());
 

@@ -41,6 +41,9 @@ public:
 	void Shutdown();
 	bool Render(ID3D11DeviceContext*, XMMATRIX, XMMATRIX);
 
+	bool SetFps(int, ID3D11DeviceContext*);
+	bool SetCpu(int, ID3D11DeviceContext*);
+
 	bool UpdateSentence(int, const char*, int, int, float, float, float, ID3D11DeviceContext*);
 
 private:
@@ -54,7 +57,12 @@ private:
 	FontShaderClass* m_FontShader;
 	int m_screenWidth, m_screenHeight;
 	XMMATRIX m_baseViewMatrix;
-	SentenceType* m_sentence1;
+	SentenceType* m_FpsSentence;
+	SentenceType* m_CpuSentence;
+	SentenceType* m_PolygonSentence;
+	SentenceType* m_ObjectsSentence;
+	SentenceType* m_ScreenSize;
+
 	std::vector<SentenceType**> m_sentences;
 	//SentenceType* m_sentence2;
 };

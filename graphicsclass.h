@@ -44,7 +44,7 @@ public:
 
 	bool Initialize(int, int, HWND);
 	void Shutdown();
-	bool Frame(const std::pair<float, float>*, const BYTE*);
+	bool Frame(const std::pair<float, float>*, const BYTE*, int, int, float);
 
 private:
 	bool Render();
