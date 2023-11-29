@@ -101,46 +101,46 @@ bool TextClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	}
 
 	// Now update the sentence vertex buffer with the new string information.
-	result = UpdateSentence(m_CpuSentence, "Cpu: ", 20, 40, 0.0f, 1.0f, 0.0f, deviceContext);
+	result = UpdateSentence(m_CpuSentence, "Cpu: ", 150, 20, 0.0f, 1.0f, 0.0f, deviceContext);
 	if (!result)
 	{
 		return false;
 	}
 
-	result = InitializeSentence(&m_PolygonSentence, 16, device);
-	if (!result)
-	{
-		return false;
-	}
-
-	// Now update the sentence vertex buffer with the new string information.
-	result = UpdateSentence(m_PolygonSentence, "Polygons: ", 20, 60, 0.0f, 1.0f, 0.0f, deviceContext);
-	if (!result)
-	{
-		return false;
-	}
-
-	result = InitializeSentence(&m_ObjectsSentence, 16, device);
+	result = InitializeSentence(&m_PolygonSentence, 20, device);
 	if (!result)
 	{
 		return false;
 	}
 
 	// Now update the sentence vertex buffer with the new string information.
-	result = UpdateSentence(m_ObjectsSentence, "Objects: ", 20, 80, 0.0f, 1.0f, 0.0f, deviceContext);
+	result = UpdateSentence(m_PolygonSentence, "Polygons: ", 20, 40, 0.0f, 1.0f, 0.0f, deviceContext);
 	if (!result)
 	{
 		return false;
 	}
 
-	result = InitializeSentence(&m_ScreenSize, 16, device);
+	result = InitializeSentence(&m_ObjectsSentence, 20, device);
 	if (!result)
 	{
 		return false;
 	}
 
 	// Now update the sentence vertex buffer with the new string information.
-	result = UpdateSentence(m_ScreenSize, "Screen: ", 20, 100, 0.0f, 1.0f, 0.0f, deviceContext);
+	result = UpdateSentence(m_ObjectsSentence, "Objects: ", 150, 40, 0.0f, 1.0f, 0.0f, deviceContext);
+	if (!result)
+	{
+		return false;
+	}
+
+	result = InitializeSentence(&m_ScreenSizeSentence, 30, device);
+	if (!result)
+	{
+		return false;
+	}
+
+	// Now update the sentence vertex buffer with the new string information.
+	result = UpdateSentence(m_ScreenSizeSentence, "Screen: ", 20, 60, 0.0f, 1.0f, 0.0f, deviceContext);
 	if (!result)
 	{
 		return false;
@@ -157,7 +157,7 @@ void TextClass::Shutdown()
 	ReleaseSentence(&m_CpuSentence);
 	ReleaseSentence(&m_PolygonSentence);
 	ReleaseSentence(&m_ObjectsSentence);
-	ReleaseSentence(&m_ScreenSize);
+	ReleaseSentence(&m_ScreenSizeSentence);
 
 	for (SentenceType** sentence : m_sentences) {
 		ReleaseSentence(sentence);
@@ -189,6 +189,8 @@ void TextClass::Shutdown()
 bool TextClass::Render(ID3D11DeviceContext* deviceContext, XMMATRIX worldMatrix, XMMATRIX orthoMatrix)
 {
 	bool result;
+
+	SetScreenSize(m_screenWidth, m_screenHeight, deviceContext);
 
 	for (SentenceType** sentence : m_sentences) 
 	{
@@ -226,7 +228,7 @@ bool TextClass::Render(ID3D11DeviceContext* deviceContext, XMMATRIX worldMatrix,
 		return false;
 	}
 
-	result = RenderSentence(deviceContext, m_ScreenSize, worldMatrix, orthoMatrix);
+	result = RenderSentence(deviceContext, m_ScreenSizeSentence, worldMatrix, orthoMatrix);
 	if (!result)
 	{
 		return false;
@@ -306,13 +308,104 @@ bool TextClass::SetCpu(int cpu, ID3D11DeviceContext* deviceContext)
 	strcat_s(cpuString, "%");
 
 	// Update the sentence vertex buffer with the new string information.
-	result = UpdateSentence(m_CpuSentence, cpuString, 20, 40, 0.0f, 1.0f, 0.0f, deviceContext);
+	result = UpdateSentence(m_CpuSentence, cpuString, 150, 20, 0.0f, 1.0f, 0.0f, deviceContext);
 	if (!result)
 	{
 		return false;
 	}
 
 	return true;
+}
+
+bool TextClass::SetPolygons(int polygons, ID3D11DeviceContext* deviceContext)
+{
+	char tempString[16];
+	char polygonString[20];
+	bool result;
+
+
+	// Convert the cpu integer to string format.
+	_itoa_s(polygons, tempString, 10);
+
+	// Setup the cpu string.
+	strcpy_s(polygonString, "polygons: ");
+	strcat_s(polygonString, tempString);
+
+	// Update the sentence vertex buffer with the new string information.
+	result = UpdateSentence(m_PolygonSentence, polygonString, 20, 40, 0.0f, 1.0f, 0.0f, deviceContext);
+	if (!result)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool TextClass::SetObjects(int objects, ID3D11DeviceContext* deviceContext)
+{
+	char tempString[16];
+	char objectString[20];
+	bool result;
+
+
+	// Convert the cpu integer to string format.
+	_itoa_s(objects, tempString, 10);
+
+	// Setup the cpu string.
+	strcpy_s(objectString, "objects: ");
+	strcat_s(objectString, tempString);
+
+	// Update the sentence vertex buffer with the new string information.
+	result = UpdateSentence(m_ObjectsSentence, objectString, 150, 40, 0.0f, 1.0f, 0.0f, deviceContext);
+	if (!result)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool TextClass::SetScreenSize(int width, int height, ID3D11DeviceContext* deviceContext)
+{
+	char temp1String[16];
+	char temp2String[16];
+	char screenString[30];
+	bool result;
+
+
+	// Convert the cpu integer to string format.
+	_itoa_s(width, temp1String, 10);
+	_itoa_s(height, temp2String, 10);
+
+	// Setup the cpu string.
+	strcpy_s(screenString, "Screen: ");
+	strcat_s(screenString, temp1String);
+	strcat_s(screenString, " : ");
+	strcat_s(screenString, temp2String);
+
+	// Update the sentence vertex buffer with the new string information.
+	result = UpdateSentence(m_ScreenSizeSentence, screenString, 20, 60, 0.0f, 1.0f, 0.0f, deviceContext);
+	if (!result)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+int TextClass::GetTotalSentenceIndexCount()
+{
+	int total = 0;
+	total += m_FpsSentence->indexCount;
+	total += m_CpuSentence->indexCount;
+	total += m_PolygonSentence->indexCount;
+	total += m_ObjectsSentence->indexCount;
+	total += m_ScreenSizeSentence->indexCount;
+	for (SentenceType** sentence : m_sentences) {
+		SentenceType* value = *sentence;
+		total += value->indexCount;
+	}
+	return total;
 }
 
 bool TextClass::UpdateSentence(int index, const char* text, int positionX, int positionY,

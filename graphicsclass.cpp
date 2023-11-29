@@ -393,6 +393,7 @@ bool GraphicsClass::Render()
 	rotationYValue += 0.01f;
 
 	int polygonCount = 0;
+	int objectCount = 0;
 	float fogColor, fogStart, fogEnd;
 	// Set the color of the fog to grey.
 	fogColor = 0.2f;
@@ -436,6 +437,8 @@ bool GraphicsClass::Render()
 	{
 		return false;
 	}
+	polygonCount += m_Ground_Mountain->GetIndexCount();
+	objectCount += 1;
 	// Render the model using the texture shader.
 	/*
 	result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Ground_Mountain->GetIndexCount(),
@@ -464,6 +467,8 @@ bool GraphicsClass::Render()
 	{
 		return false;
 	}
+	polygonCount += m_Player->GetIndexCount();
+	objectCount += 1;
 
 	m_EnemyAirCraft->Render(m_D3D->GetDeviceContext());
 	enemyAirCraftMatrix = worldMatrix;
@@ -477,6 +482,8 @@ bool GraphicsClass::Render()
 	{
 		return false;
 	}
+	polygonCount += m_EnemyAirCraft->GetIndexCount();
+	objectCount += 1;
 
 	m_Target->Render(m_D3D->GetDeviceContext());
 	targetMatrix = worldMatrix;
@@ -492,6 +499,8 @@ bool GraphicsClass::Render()
 	{
 		return false;
 	}
+	polygonCount += m_Target->GetIndexCount();
+	objectCount += 1;
 
 	// Turn off the Z buffer to begin all 2D rendering.
 	m_D3D->TurnZBufferOff();
@@ -523,12 +532,17 @@ bool GraphicsClass::Render()
 		return false;
 	}
 	
+	polygonCount += m_Text->GetTotalSentenceIndexCount();
+	m_Text->SetPolygons(polygonCount, m_D3D->GetDeviceContext());
+	m_Text->SetObjects(objectCount, m_D3D->GetDeviceContext());
+
 	// Render the text strings.
 	result = m_Text->Render(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix);
 	if (!result)
 	{
 		return false;
 	}
+
 
 	// Turn the Z buffer back on now that all 2D rendering has completed.
 	m_D3D->TurnZBufferOn();

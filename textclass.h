@@ -43,7 +43,11 @@ public:
 
 	bool SetFps(int, ID3D11DeviceContext*);
 	bool SetCpu(int, ID3D11DeviceContext*);
+	bool SetPolygons(int, ID3D11DeviceContext*);
+	bool SetObjects(int, ID3D11DeviceContext*);
+	bool SetScreenSize(int, int, ID3D11DeviceContext*);
 
+	int GetTotalSentenceIndexCount();
 	bool UpdateSentence(int, const char*, int, int, float, float, float, ID3D11DeviceContext*);
 
 private:
@@ -61,7 +65,7 @@ private:
 	SentenceType* m_CpuSentence;
 	SentenceType* m_PolygonSentence;
 	SentenceType* m_ObjectsSentence;
-	SentenceType* m_ScreenSize;
+	SentenceType* m_ScreenSizeSentence;
 
 	std::vector<SentenceType**> m_sentences;
 	//SentenceType* m_sentence2;
