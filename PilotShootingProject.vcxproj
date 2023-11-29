@@ -24,6 +24,7 @@
     <ClInclude Include="colorshaderclass.h" />
     <ClInclude Include="d3dclass.h" />
     <ClInclude Include="DDSTextureLoader.h" />
+    <ClInclude Include="fogshaderclass.h" />
     <ClInclude Include="fontclass.h" />
     <ClInclude Include="fontshaderclass.h" />
     <ClInclude Include="graphicsclass.h" />
@@ -42,6 +43,7 @@
     <ClCompile Include="colorshaderclass.cpp" />
     <ClCompile Include="d3dclass.cpp" />
     <ClCompile Include="DDSTextureLoader.cpp" />
+    <ClCompile Include="fogshaderclass.cpp" />
     <ClCompile Include="fontclass.cpp" />
     <ClCompile Include="fontshaderclass.cpp" />
     <ClCompile Include="graphicsclass.cpp" />
@@ -60,6 +62,8 @@
     <None Include="data\color.ps" />
     <None Include="data\color.vs" />
     <None Include="data\EnemyAirCraft.mtl" />
+    <None Include="data\fog.ps" />
+    <None Include="data\fog.vs" />
     <None Include="data\font.ps" />
     <None Include="data\font.vs" />
     <None Include="data\light.ps" />

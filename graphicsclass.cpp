@@ -3,6 +3,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "graphicsclass.h"
 #include <string>
+#include <sstream>
+#include <iomanip>
 
 GraphicsClass::GraphicsClass()
 {
@@ -200,10 +202,24 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	{
 		return false;
 	}
-	result = m_SkyboxShader->Initialize(m_D3D->GetDevice(), hwnd, m_Camera, m_D3D->GetSwapChain());
+	result = m_SkyboxShader->Initialize(m_D3D->GetDevice(), hwnd, m_Camera);
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the text object.", L"Error", MB_OK);
+		return false;
+	}
+
+
+	m_FogShader = new FogShaderClass;
+	if (!m_FogShader)
+	{
+		return false;
+	}
+	// Initialize the fog shader object.
+	result = m_FogShader->Initialize(m_D3D->GetDevice(), hwnd);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the fog shader object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -237,20 +253,21 @@ void GraphicsClass::Shutdown()
 		m_SkyboxShader = 0;
 	}
 
+	// Release the skybox shader object.
+	if (m_FogShader)
+	{
+		m_FogShader->Shutdown();
+		delete m_FogShader;
+		m_FogShader = 0;
+	}
+
+
 	// Release the model object.
 	if(m_Player)
 	{
 		m_Player->Shutdown();
 		delete m_Player;
 		m_Player = 0;
-	}
-
-	// Release the model object.
-	if (m_SkyboxShader)
-	{
-		m_SkyboxShader->Shutdown();
-		delete m_SkyboxShader;
-		m_SkyboxShader = 0;
 	}
 
 	// Release the model object.
@@ -359,8 +376,17 @@ bool GraphicsClass::Render()
 
 	rotationYValue += 0.01f;
 
+	float fogColor, fogStart, fogEnd;
+	// Set the color of the fog to grey.
+	fogColor = 0.2f;
+
+	// Set the start and end of the fog.
+	fogStart = 0.0f;
+	fogEnd = 100.0f;
+
+
 	// Clear the buffers to begin the scene.
-	m_D3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
+	m_D3D->BeginScene(fogColor, fogColor, fogColor, 1.0f);
 
 	// Generate the view matrix based on the camera's position.
 	m_Camera->Render();
@@ -371,25 +397,37 @@ bool GraphicsClass::Render()
 	m_D3D->GetProjectionMatrix(projectionMatrix);
 
 	m_D3D->GetOrthoMatrix(orthoMatrix);
-
 	
+	m_D3D->TurnOnCullNone();
+	/*
 	result = m_SkyboxShader->Render(m_D3D->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix);
 	if (!result)
 	{
 		return false;
 	}
+	*/
+	m_D3D->TurnOffCullNone();
 
 	groundMatrix = worldMatrix;
-	groundMatrix *= XMMatrixScaling(100.0f, 10.0f, 100.0f);
-	groundMatrix *= XMMatrixTranslation(0.0f, -15.0f, 0.0f);
+	groundMatrix *= XMMatrixScaling(60.0f, 10.0f, 60.0f);
+	groundMatrix *= XMMatrixTranslation(0.0f, -40.0f, 0.0f);
 	m_Ground_Mountain->Render(m_D3D->GetDeviceContext());
+
+	result = m_FogShader->Render(m_D3D->GetDeviceContext(), m_Ground_Mountain->GetIndexCount(), groundMatrix, viewMatrix, projectionMatrix,
+		m_Ground_Mountain->GetTexture(), fogStart, fogEnd);
+	if (!result)
+	{
+		return false;
+	}
 	// Render the model using the texture shader.
+	/*
 	result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Ground_Mountain->GetIndexCount(),
 		groundMatrix, viewMatrix, projectionMatrix, m_Ground_Mountain->GetTexture());
 	if (!result)
 	{
 		return false;
 	}
+	*/
 
 	// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
 	m_Player->Render(m_D3D->GetDeviceContext());
@@ -447,13 +485,27 @@ bool GraphicsClass::Render()
 	XMMATRIX mtxView = playerMatrix;
 	XMFLOAT4X4 fView;
 	XMStoreFloat4x4(&fView, mtxView);
-	float x = fView._11;
-	float y = fView._22;
-	float z = fView._33;
+	float x = fView._41;
+	float y = fView._42;
+	float z = fView._43;
+
+	// Reference : https://stackoverflow.com/questions/29200635/convert-float-to-string-with-precision-number-of-decimal-digits-specified
+	stringstream ss;
+	ss << std::fixed << std::setprecision(2) << x << " " << y << " " << z;
+	string position[3];
+	string token;
+	for (int i = 0; ss >> token; i++) {
+		position[i] = token;
+	}
 
 	string sentence = 
-		"CurrentPosition : (" + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(z) + ")";
-	m_Text->UpdateSentence(0, sentence.c_str(), 100, 100, 1.0f, 1.0f, 1.0f, m_D3D->GetDeviceContext());
+		"CurrentPosition : (" + position[0] + ", " + position[1] + ", " + position[2] + ")";
+	result = m_Text->UpdateSentence(0, sentence.c_str(), 100, 100, 1.0f, 1.0f, 1.0f, m_D3D->GetDeviceContext());
+	if (!result)
+	{
+		return false;
+	}
+	
 	// Render the text strings.
 	result = m_Text->Render(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix);
 	if (!result)
@@ -465,6 +517,7 @@ bool GraphicsClass::Render()
 	m_D3D->TurnZBufferOn();
 	// Turn off alpha blending after rendering the text.
 	m_D3D->TurnOffAlphaBlending();
+	
 
 	// Present the rendered scene to the screen.
 	m_D3D->EndScene();

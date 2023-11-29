@@ -69,7 +69,7 @@ bool TextClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	}
 
 	// Initialize the first sentence.
-	result = InitializeSentence(m_sentences[0], 30, device);
+	result = InitializeSentence(m_sentences[0], 60, device);
 	if (!result)
 	{
 		return false;

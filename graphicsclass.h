@@ -16,6 +16,7 @@
 #include "lightshaderclass.h"
 #include "lightclass.h"
 #include "textclass.h"
+#include "fogshaderclass.h"
 #include <dinput.h>
 
 
@@ -62,6 +63,7 @@ private:
 	TextureShaderClass* m_TextureShader;
 
 	SkyBoxShaderClass* m_SkyboxShader;
+	FogShaderClass* m_FogShader;
 
 	TextClass* m_Text;
 };

@@ -17,7 +17,7 @@ CameraClass::CameraClass()
 	m_camForward = DefaultForward;
 	m_camRight = DefaultRight;
 	
-	m_distance = 8.0f;
+	m_distance = 4.0f;
 }
 
 

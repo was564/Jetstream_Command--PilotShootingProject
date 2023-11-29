@@ -54,7 +54,9 @@ public:
 
 	void TurnOnAlphaBlending();
 	void TurnOffAlphaBlending();
-	IDXGISwapChain* GetSwapChain();
+
+	void TurnOnCullNone();
+	void TurnOffCullNone();
 
 private:
 	bool m_vsync_enabled;
@@ -76,6 +78,9 @@ private:
 
 	ID3D11BlendState* m_alphaEnableBlendingState;
 	ID3D11BlendState* m_alphaDisableBlendingState;
+
+	ID3D11RasterizerState* m_RasterizerStateCullNone;
+	ID3D11DepthStencilState* m_DepthStencilStateLessEqual;
 };
 
 #endif

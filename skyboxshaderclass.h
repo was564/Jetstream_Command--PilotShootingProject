@@ -20,6 +20,7 @@
 #include <fstream>
 
 #include "cameraclass.h"
+#include "textureclass.h"
 
 using namespace std;
 using namespace DirectX;
@@ -44,10 +45,12 @@ struct Vertex	//Overloaded Vertex Structure
 class SkyBoxShaderClass
 {
 private:
-	struct cbPerObject
+
+	struct MatrixBufferType
 	{
-		XMMATRIX  WVP;
-		XMMATRIX World;
+		XMMATRIX world;
+		XMMATRIX view;
+		XMMATRIX projection;
 	};
 
 public:
@@ -55,13 +58,13 @@ public:
 	SkyBoxShaderClass(const SkyBoxShaderClass&);
 	~SkyBoxShaderClass();
 
-	bool Initialize(ID3D11Device*, HWND, CameraClass*, IDXGISwapChain*);
+	bool Initialize(ID3D11Device*, HWND, CameraClass*);
+	bool LoadTexture(ID3D11Device* device, const WCHAR* filename);
 	void Shutdown();
 	bool Render(ID3D11DeviceContext*, XMMATRIX, XMMATRIX, XMMATRIX);
 
 private:
 	bool InitializeShader(ID3D11Device*, HWND, const WCHAR*, const WCHAR*);
-	bool InitD2D_D3D101_DWrite(IDXGIAdapter1* Adapter);
 	void ShutdownShader();
 	void OutputShaderErrorMessage(ID3D10Blob*, HWND, const WCHAR*);
 
@@ -71,13 +74,8 @@ private:
 private:
 	ID3D11VertexShader* m_SKYMAP_VS;
 	ID3D11PixelShader* m_SKYMAP_PS;
-	ID3D10Blob* m_SKYMAP_VS_Buffer;
-	ID3D10Blob* m_SKYMAP_PS_Buffer;
-	ID3D11ShaderResourceView* m_smrv;
 
 	bool CreateSphere(int, int, ID3D11Device*);
-
-	ID3D11Texture2D* m_Texture;
 
 	int NumSphereVertices;
 	int NumSphereFaces;
@@ -87,19 +85,13 @@ private:
 
 	ID3D11Buffer* m_sphereIndexBuffer;
 	ID3D11Buffer* m_sphereVertBuffer;
-	ID3D11Buffer* m_cbPerObjectBuffer;
-	ID3D11SamplerState* m_CubesTexSamplerState;
-	ID3D11RasterizerState* m_CCWcullMode;
-	ID3D11RasterizerState* m_CWcullMode;
-	ID3D11RasterizerState* m_RSCullNone;
-	ID3D11DepthStencilState* m_DSLessEqual;
+	ID3D11Buffer* m_matrixBuffer;
 	ID3D11DepthStencilView* m_depthStencilView;
 	ID3D11RenderTargetView* m_renderTargetView;
-	IDXGISwapChain* m_swapChain;
-	ID3D11Texture2D* m_BackBuffer11;
-	// ID3D11InputLayout* m_layout;
-	// ID3D11Buffer* m_matrixBuffer;
-	// ID3D11SamplerState* m_sampleState;
+	ID3D11InputLayout* m_layout;
+
+	ID3D11SamplerState* m_CubesTexSamplerState;
+	ID3D11ShaderResourceView* m_smrv;
 
 	CameraClass* m_Camera;
 };
