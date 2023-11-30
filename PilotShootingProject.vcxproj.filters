@@ -84,6 +84,12 @@
     <ClInclude Include="fireshaderclass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="particlesystemclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="particleshaderclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cameraclass.cpp">
@@ -152,6 +158,12 @@
     <ClCompile Include="fireshaderclass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="particlesystemclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="particleshaderclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\PlayerModel.mtl">
@@ -206,6 +218,12 @@
       <Filter>Resource Files\ShaderFile</Filter>
     </None>
     <None Include=".editorconfig" />
+    <None Include="data\particle.ps">
+      <Filter>Resource Files\ShaderFile</Filter>
+    </None>
+    <None Include="data\particle.vs">
+      <Filter>Resource Files\ShaderFile</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="data\PlayerModel.obj">
@@ -259,6 +277,9 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="data\alpha01.dds">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\star.dds">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

@@ -60,10 +60,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
-	// Set the initial position of the camera.
-	m_Camera->SetPosition(0.0f, 0.0f, 0.0f);	// for cube model
-//	m_Camera->SetPosition(0.0f, 0.5f, -3.0f);	// for chair model
-	m_Camera->SetRotation(0.0f, 0.0f, 0.0f);
 	
 	m_Cube = new ModelClass;
 	if (!m_Cube)
@@ -193,6 +189,10 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Light->SetSpecularPower(50.0f);
 
 
+    // Set the initial position of the camera.
+    m_Camera->SetPosition(0.0f, -2.0f, 0.0f);
+    m_Camera->SetRotation(0.0f, 0.0f, 0.0f);
+
 	m_Camera->Render();
 	m_Camera->GetViewMatrix(baseViewMatrix);
 
@@ -250,6 +250,35 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
         return false;
     }
 
+    // Create the particle shader object.
+    m_ParticleShader = new ParticleShaderClass;
+    if (!m_ParticleShader)
+    {
+        return false;
+    }
+
+    // Initialize the particle shader object.
+    result = m_ParticleShader->Initialize(m_D3D->GetDevice(), hwnd);
+    if (!result)
+    {
+        MessageBox(hwnd, L"Could not initialize the particle shader object.", L"Error", MB_OK);
+        return false;
+    }
+
+    // Create the particle system object.
+    m_ParticleSystem = new ParticleSystemClass;
+    if (!m_ParticleSystem)
+    {
+        return false;
+    }
+
+    // Initialize the particle system object.
+    result = m_ParticleSystem->Initialize(m_D3D->GetDevice(), L"./data/star.dds");
+    if (!result)
+    {
+        return false;
+    }
+
 	return true;
 }
 
@@ -265,12 +294,28 @@ void GraphicsClass::Shutdown()
 	}
 
 	// Release the texture shader object.
-	if(m_TextureShader)
+	if(m_ParticleSystem)
 	{
-		m_TextureShader->Shutdown();
-		delete m_TextureShader;
-		m_TextureShader = 0;
+        m_ParticleSystem->Shutdown();
+		delete m_ParticleSystem;
+        m_ParticleSystem = 0;
 	}
+
+    // Release the texture shader object.
+    if (m_ParticleShader)
+    {
+        m_ParticleShader->Shutdown();
+        delete m_ParticleShader;
+        m_ParticleShader = 0;
+    }
+
+    // Release the texture shader object.
+    if (m_TextureShader)
+    {
+        m_TextureShader->Shutdown();
+        delete m_TextureShader;
+        m_TextureShader = 0;
+    }
 
 	// Release the skybox shader object.
 	if (m_SkyboxShader)
@@ -383,6 +428,7 @@ bool GraphicsClass::Frame(const std::pair<float, float>* mouseMovingValue, const
 		mouseMovingValue->first * mouseSensibility,
 		0.0f);
 
+    m_ParticleSystem->Frame(frameTime, m_D3D->GetDeviceContext());
 
 	// Set the frames per second.
 	result = m_Text->SetFps(fps, m_D3D->GetDeviceContext());
@@ -412,7 +458,7 @@ bool GraphicsClass::Frame(const std::pair<float, float>* mouseMovingValue, const
 bool GraphicsClass::Render()
 {
 	XMMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
-	XMMATRIX playerMatrix, enemyAirCraftMatrix, targetMatrix, groundMatrix, boxMatrix;
+	XMMATRIX playerMatrix, enemyAirCraftMatrix, targetMatrix, groundMatrix, burnedCubeMatrix;
 	bool result;
 
 	static float rotationYValue = 0.0f;
@@ -529,53 +575,6 @@ bool GraphicsClass::Render()
 	polygonCount += m_Target->GetIndexCount();
 	objectCount += 1;
 
-	// Turn off the Z buffer to begin all 2D rendering.
-	m_D3D->TurnZBufferOff();
-	// Turn on the alpha blending before rendering the text.
-	m_D3D->TurnOnAlphaBlending();
-
-	// Reference : https://stackoverflow.com/questions/17249434/how-to-dump-xmmatrix-member-value
-	XMMATRIX mtxView = playerMatrix;
-	XMFLOAT4X4 fView;
-	XMStoreFloat4x4(&fView, mtxView);
-	float x = fView._41;
-	float y = fView._42;
-	float z = fView._43;
-
-	// Reference : https://stackoverflow.com/questions/29200635/convert-float-to-string-with-precision-number-of-decimal-digits-specified
-	stringstream ss;
-	ss << std::fixed << std::setprecision(2) << x << " " << y << " " << z;
-	string position[3];
-	string token;
-	for (int i = 0; ss >> token; i++) {
-		position[i] = token;
-	}
-
-	string sentence = 
-		"CurrentPosition : (" + position[0] + ", " + position[1] + ", " + position[2] + ")";
-	result = m_Text->UpdateSentence(0, sentence.c_str(), 100, 100, 1.0f, 1.0f, 1.0f, m_D3D->GetDeviceContext());
-	if (!result)
-	{
-		return false;
-	}
-	
-	polygonCount += m_Text->GetTotalSentenceIndexCount();
-	m_Text->SetPolygons(polygonCount, m_D3D->GetDeviceContext());
-	m_Text->SetObjects(objectCount, m_D3D->GetDeviceContext());
-
-	// Render the text strings.
-	result = m_Text->Render(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix);
-	if (!result)
-	{
-		return false;
-	}
-	
-	// Turn the Z buffer back on now that all 2D rendering has completed.
-	m_D3D->TurnZBufferOn();
-	// Turn off alpha blending after rendering the text.
-	m_D3D->TurnOffAlphaBlending();
-	
-
 	// FireShader
 	XMFLOAT3 scrollSpeeds, scales;
 	XMFLOAT2 distortion1, distortion2, distortion3;
@@ -606,18 +605,81 @@ bool GraphicsClass::Render()
 
 	m_D3D->TurnOnAlphaBlending();
 
+
+    burnedCubeMatrix = worldMatrix;
+    burnedCubeMatrix *= XMMatrixTranslation(5.0f, 5.0f, 5.0f);
     m_Cube->Render(m_D3D->GetDeviceContext());
 
     // Render the square model using the fire shader.
-    result = m_FireShader->Render(m_D3D->GetDeviceContext(), m_Cube->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+    result = m_FireShader->Render(m_D3D->GetDeviceContext(), m_Cube->GetIndexCount(), burnedCubeMatrix, viewMatrix, projectionMatrix,
         m_Cube->GetTexture1(), m_Cube->GetTexture2(), m_Cube->GetTexture3(), frameTime, scrollSpeeds,
         scales, distortion1, distortion2, distortion3, distortionScale, distortionBias);
     if (!result)
     {
         return false;
     }
+    polygonCount += m_Cube->GetIndexCount();
+    objectCount += 1;
+
+    m_ParticleSystem->Render(m_D3D->GetDeviceContext());
+
+    // Render the model using the texture shader.
+    result = m_ParticleShader->Render(m_D3D->GetDeviceContext(), m_ParticleSystem->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+        m_ParticleSystem->GetTexture());
+    if (!result)
+    {
+        return false;
+    }
+    polygonCount += m_ParticleSystem->GetIndexCount();
+    objectCount += 1;
 
     // Turn off alpha blending.
+    m_D3D->TurnOffAlphaBlending();
+
+    // Turn off the Z buffer to begin all 2D rendering.
+    m_D3D->TurnZBufferOff();
+    // Turn on the alpha blending before rendering the text.
+    m_D3D->TurnOnAlphaBlending();
+
+    // Reference : https://stackoverflow.com/questions/17249434/how-to-dump-xmmatrix-member-value
+    XMMATRIX mtxView = playerMatrix;
+    XMFLOAT4X4 fView;
+    XMStoreFloat4x4(&fView, mtxView);
+    float x = fView._41;
+    float y = fView._42;
+    float z = fView._43;
+
+    // Reference : https://stackoverflow.com/questions/29200635/convert-float-to-string-with-precision-number-of-decimal-digits-specified
+    stringstream ss;
+    ss << std::fixed << std::setprecision(2) << x << " " << y << " " << z;
+    string position[3];
+    string token;
+    for (int i = 0; ss >> token; i++) {
+        position[i] = token;
+    }
+
+    string sentence =
+        "CurrentPosition : (" + position[0] + ", " + position[1] + ", " + position[2] + ")";
+    result = m_Text->UpdateSentence(0, sentence.c_str(), 100, 100, 1.0f, 1.0f, 1.0f, m_D3D->GetDeviceContext());
+    if (!result)
+    {
+        return false;
+    }
+
+    polygonCount += m_Text->GetTotalSentenceIndexCount();
+    m_Text->SetPolygons(polygonCount, m_D3D->GetDeviceContext());
+    m_Text->SetObjects(objectCount, m_D3D->GetDeviceContext());
+
+    // Render the text strings.
+    result = m_Text->Render(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix);
+    if (!result)
+    {
+        return false;
+    }
+
+    // Turn the Z buffer back on now that all 2D rendering has completed.
+    m_D3D->TurnZBufferOn();
+    // Turn off alpha blending after rendering the text.
     m_D3D->TurnOffAlphaBlending();
 
 	// Present the rendered scene to the screen.

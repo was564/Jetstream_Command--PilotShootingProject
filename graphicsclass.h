@@ -18,6 +18,8 @@
 #include "textclass.h"
 #include "fogshaderclass.h"
 #include "fireshaderclass.h"
+#include "particleshaderclass.h"
+#include "particlesystemclass.h"
 #include <dinput.h>
 
 
@@ -68,6 +70,8 @@ private:
 	FogShaderClass* m_FogShader;
 	FireShaderClass* m_FireShader;
 
+    ParticleShaderClass* m_ParticleShader;
+    ParticleSystemClass* m_ParticleSystem;
 
 	TextClass* m_Text;
 };

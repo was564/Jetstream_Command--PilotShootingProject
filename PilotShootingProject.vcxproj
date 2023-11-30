@@ -35,6 +35,8 @@
     <ClInclude Include="lightclass.h" />
     <ClInclude Include="lightshaderclass.h" />
     <ClInclude Include="modelclass.h" />
+    <ClInclude Include="particleshaderclass.h" />
+    <ClInclude Include="particlesystemclass.h" />
     <ClInclude Include="skyboxshaderclass.h" />
     <ClInclude Include="systemclass.h" />
     <ClInclude Include="textclass.h" />
@@ -59,6 +61,8 @@
     <ClCompile Include="lightshaderclass.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="modelclass.cpp" />
+    <ClCompile Include="particleshaderclass.cpp" />
+    <ClCompile Include="particlesystemclass.cpp" />
     <ClCompile Include="skyboxshaderclass.cpp" />
     <ClCompile Include="systemclass.cpp" />
     <ClCompile Include="textclass.cpp" />
@@ -80,6 +84,8 @@
     <None Include="data\light.ps" />
     <None Include="data\light.vs" />
     <None Include="data\Mountain.mtl" />
+    <None Include="data\particle.ps" />
+    <None Include="data\particle.vs" />
     <None Include="data\PlayerModel.mtl" />
     <None Include="data\skymap.ps" />
     <None Include="data\skymap.vs" />
@@ -102,6 +108,7 @@
     <Image Include="data\PlayerModel.dds" />
     <Image Include="data\skymap.dds" />
     <Image Include="data\skymap2.dds" />
+    <Image Include="data\star.dds" />
     <Image Include="data\Target.dds" />
   </ItemGroup>
   <ItemGroup>
