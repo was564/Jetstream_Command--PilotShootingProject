@@ -35,6 +35,8 @@ public:
 	XMFLOAT3 GetPosition();
 	XMFLOAT3 GetRotation();
 
+    XMFLOAT3 GetActualPosition();
+
 	void Render();
 	void GetViewMatrix(XMMATRIX&);
 	const XMVECTOR& GetLookAtPosition();

@@ -458,7 +458,8 @@ bool GraphicsClass::Frame(const std::pair<float, float>* mouseMovingValue, const
 bool GraphicsClass::Render()
 {
 	XMMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
-	XMMATRIX playerMatrix, enemyAirCraftMatrix, targetMatrix, groundMatrix, burnedCubeMatrix;
+	XMMATRIX playerMatrix, enemyAirCraftMatrix, targetMatrix, groundMatrix, burnedCubeMatrix, particleMatrix;
+    XMFLOAT3 particlePosition, cameraPosition;
 	bool result;
 
 	static float rotationYValue = 0.0f;
@@ -623,8 +624,20 @@ bool GraphicsClass::Render()
 
     m_ParticleSystem->Render(m_D3D->GetDeviceContext());
 
+    // for billboarding
+    cameraPosition = m_Camera->GetActualPosition();
+    particlePosition = XMFLOAT3(0.0f, 1.0f, 0.0f);
+    // 아크 탄젠트 함수를 사용하여 현재 카메라 위치를 향하도록 빌보드 모델에 적용해야하는 회전을 계산합니다.
+    double angle = atan2(particlePosition.x - cameraPosition.x, particlePosition.z - cameraPosition.z) * (180.0 / XM_PI);
+
+    // 회전을 라디안으로 변환합니다.
+    float rotation = (float)angle * 0.0174532925f;
+
+    particleMatrix = worldMatrix;
+    particleMatrix *= XMMatrixRotationY(rotation);
+    particleMatrix *= XMMatrixTranslationFromVector(XMLoadFloat3(&particlePosition));
     // Render the model using the texture shader.
-    result = m_ParticleShader->Render(m_D3D->GetDeviceContext(), m_ParticleSystem->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+    result = m_ParticleShader->Render(m_D3D->GetDeviceContext(), m_ParticleSystem->GetIndexCount(), particleMatrix, viewMatrix, projectionMatrix,
         m_ParticleSystem->GetTexture());
     if (!result)
     {

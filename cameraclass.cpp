@@ -91,9 +91,20 @@ XMFLOAT3 CameraClass::GetPosition()
 }
 
 
+
 XMFLOAT3 CameraClass::GetRotation()
 {
 	return m_rotation;
+}
+
+XMFLOAT3 CameraClass::GetActualPosition()
+{
+    XMVECTOR position = XMLoadFloat3(&m_position);
+    position -= m_camForward * m_distance;
+
+    XMFLOAT3 positionFloat;
+    XMStoreFloat3(&positionFloat, position);
+    return XMFLOAT3(positionFloat);
 }
 
 // This uses the position and rotation of the camera to build and to update the view matrix.
