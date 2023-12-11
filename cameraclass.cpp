@@ -38,6 +38,13 @@ void CameraClass::SetPosition(float x, float y, float z)
 	m_position.z = z;
 }
 
+void CameraClass::SetPosition(const XMFLOAT3& position)
+{
+    m_position.x = position.x;
+    m_position.y = position.y;
+    m_position.z = position.z;
+}
+
 
 void CameraClass::SetRotation(float x, float y, float z)
 {

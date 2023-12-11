@@ -53,12 +53,6 @@ bool ModelClass::Initialize(ID3D11Device* device, const WCHAR* modelFilename, co
 		return false;
 	}
 
-	m_rotation = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	
-	m_modelForward = DefaultForward;
-	m_modelRight = DefaultRight;
-	m_modelUp = XMVector3Cross(m_modelForward, m_modelRight);
-
     //for fire Shader
     result = LoadTextures(device, L"./data/fire01.dds", L"./data/noise01.dds", L"./data/alpha01.dds");
     if (!result)
@@ -90,35 +84,6 @@ void ModelClass::Render(ID3D11DeviceContext* deviceContext)
 	RenderBuffers(deviceContext);
 
 	return;
-}
-
-void ModelClass::Rotate(float rotateX, float rotateY, float rotateZ)
-{
-	XMFLOAT3 tempRotate = XMFLOAT3(rotateX * 0.0174532925f, rotateY * 0.0174532925f, rotateZ * 0.0174532925f);
-
-	XMVECTOR resultVector = XMQuaternionRotationRollPitchYaw(tempRotate.x, tempRotate.y, tempRotate.z);
-
-	XMFLOAT3 result;
-	XMStoreFloat3(&result, resultVector);
-	m_rotation.x += result.x;
-	m_rotation.y += result.y;
-	m_rotation.z += result.z;
-
-	XMMATRIX resultMatrix = XMMatrixRotationRollPitchYaw(m_rotation.x, m_rotation.y, m_rotation.z);
-
-	m_modelRight = XMVector3TransformNormal(DefaultRight, resultMatrix);
-	m_modelForward = XMVector3TransformNormal(DefaultForward, resultMatrix);
-	m_modelUp = XMVector3Cross(m_modelForward, m_modelRight);
-}
-
-const XMFLOAT3& ModelClass::GetRotation()
-{
-	return m_rotation;
-}
-
-const XMVECTOR& ModelClass::GetForward()
-{
-	return m_modelForward;
 }
 
 int ModelClass::GetIndexCount()

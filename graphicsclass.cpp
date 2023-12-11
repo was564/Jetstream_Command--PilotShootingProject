@@ -76,7 +76,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	// Create the model object.
-	m_Player = new ModelClass;
+	m_Player = new PlaneModelClass;
 	if(!m_Player)
 	{
 		return false;
@@ -91,7 +91,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	// Create the model object.
-	m_EnemyAirCraft = new ModelClass;
+	m_EnemyAirCraft = new PlaneModelClass;
 	if (!m_EnemyAirCraft)
 	{
 		return false;
@@ -409,20 +409,15 @@ bool GraphicsClass::Frame(const std::pair<float, float>* mouseMovingValue, const
 
 	bool result;
 
-	static float speed = 0.3f * 0.01f; // 0.01f = 1 / average frame
+	static float speed = 0.6f * 0.01f; // 0.01f = 1 / average frame
 	static float mouseSensibility = 0.1f;
 
 	if (GetKeyDown(DIK_A)) m_Player->Rotate(0.0f, -1.0f, 0.0f);
 	if (GetKeyDown(DIK_D)) m_Player->Rotate(0.0f, 1.0f, 0.0f);
 	if (GetKeyDown(DIK_W)) m_Player->Rotate(-1.0f, 0.0f, 0.0f);
 	if (GetKeyDown(DIK_S)) m_Player->Rotate(1.0f, 0.0f, 0.0f);
-	float rotateZValue = 0.0f;
-	if (GetKeyDown(DIK_Q)) rotateZValue = 1.0f;
-	if (GetKeyDown(DIK_E)) rotateZValue = -1.0f;
 	m_Camera->Move(m_Player->GetForward(), -speed);
-
-	m_Player->Rotate(0.0f, 0.0f, rotateZValue);
-
+    m_Player->SetPosition(m_Camera->GetLookAtPosition());
 	m_Camera->Rotate(
 		mouseMovingValue->second * mouseSensibility, 
 		mouseMovingValue->first * mouseSensibility,
@@ -531,7 +526,7 @@ bool GraphicsClass::Render()
 	playerMatrix *= XMMatrixRotationX(playerRotation.x);
 	playerMatrix *= XMMatrixRotationY(playerRotation.y);
 	playerMatrix *= XMMatrixRotationZ(playerRotation.z);
-	playerMatrix *= XMMatrixTranslationFromVector(m_Camera->GetLookAtPosition());
+    playerMatrix *= XMMatrixTranslationFromVector(m_Player->GetPosition());
 	// Render the model using the texture shader.
 	result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Player->GetIndexCount(),
 		playerMatrix, viewMatrix, projectionMatrix, m_Player->GetTexture(),

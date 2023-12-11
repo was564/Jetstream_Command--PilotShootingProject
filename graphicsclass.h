@@ -20,6 +20,7 @@
 #include "fireshaderclass.h"
 #include "particleshaderclass.h"
 #include "particlesystemclass.h"
+#include "planemodelclass.h"
 #include <dinput.h>
 
 
@@ -55,8 +56,8 @@ private:
 private:
 	D3DClass* m_D3D;
 	CameraClass* m_Camera;
-	ModelClass* m_Player;
-	ModelClass* m_EnemyAirCraft;
+	PlaneModelClass* m_Player;
+	PlaneModelClass* m_EnemyAirCraft;
 	ModelClass* m_Target;
 	ModelClass* m_Ground_Mountain;
 	ModelClass* m_Cube;

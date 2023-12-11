@@ -25,6 +25,7 @@ public:
 	~CameraClass();
 
 	void SetPosition(float, float, float);
+	void SetPosition(const XMFLOAT3&);
 	void SetRotation(float, float, float);
 
 	void MoveForward(float);

@@ -37,6 +37,7 @@
     <ClInclude Include="modelclass.h" />
     <ClInclude Include="particleshaderclass.h" />
     <ClInclude Include="particlesystemclass.h" />
+    <ClInclude Include="planemodelclass.h" />
     <ClInclude Include="skyboxshaderclass.h" />
     <ClInclude Include="systemclass.h" />
     <ClInclude Include="textclass.h" />
@@ -63,6 +64,7 @@
     <ClCompile Include="modelclass.cpp" />
     <ClCompile Include="particleshaderclass.cpp" />
     <ClCompile Include="particlesystemclass.cpp" />
+    <ClCompile Include="planemodelclass.cpp" />
     <ClCompile Include="skyboxshaderclass.cpp" />
     <ClCompile Include="systemclass.cpp" />
     <ClCompile Include="textclass.cpp" />

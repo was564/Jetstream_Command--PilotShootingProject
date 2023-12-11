@@ -57,11 +57,8 @@ public:
     
 	void Shutdown();
 	void Render(ID3D11DeviceContext*);
-	
-	void Rotate(float, float, float);
 
-	const XMFLOAT3& GetRotation();
-	const XMVECTOR& GetForward();
+	
 	int GetIndexCount();
 	ID3D11ShaderResourceView* GetTexture();
     ID3D11ShaderResourceView* GetTexture1();
@@ -93,13 +90,6 @@ private:
     TextureClass* m_Texture3;
 
 	ModelType* m_model;
-
-
-	XMFLOAT3 m_rotation;
-
-	XMVECTOR m_modelForward;
-	XMVECTOR m_modelRight;
-	XMVECTOR m_modelUp;
 };
 
 #endif
