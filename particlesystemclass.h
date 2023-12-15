@@ -16,6 +16,7 @@
 // MY CLASS INCLUDES //
 ///////////////////////
 #include "textureclass.h"
+#include "objectclass.h"
 
 using namespace DirectX;
 
@@ -23,7 +24,7 @@ using namespace DirectX;
 ////////////////////////////////////////////////////////////////////////////////
 // Class name: ParticleSystemClass
 ////////////////////////////////////////////////////////////////////////////////
-class ParticleSystemClass
+class ParticleSystemClass : public ObjectClass
 {
 private:
 	struct ParticleType

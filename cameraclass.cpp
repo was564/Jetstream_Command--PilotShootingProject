@@ -53,6 +53,13 @@ void CameraClass::SetRotation(float x, float y, float z)
 	m_rotation.z = z;
 }
 
+void CameraClass::SetRotation(const XMFLOAT3& rotation)
+{
+    m_rotation.x = rotation.x;
+    m_rotation.y = rotation.y;
+    m_rotation.z = rotation.z;
+}
+
 void CameraClass::MoveForward(float speed)
 {
 	XMFLOAT3 temp;

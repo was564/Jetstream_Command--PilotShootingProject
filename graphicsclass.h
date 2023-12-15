@@ -20,8 +20,16 @@
 #include "fireshaderclass.h"
 #include "particleshaderclass.h"
 #include "particlesystemclass.h"
-#include "planemodelclass.h"
+#include "cameramanagerclass.h"
+#include "playermanagerclass.h"
+#include "uimanagerclass.h"
+#include "objectclass.h"
+#include "bitmapclass.h"
+#include "enemymanagerclass.h"
+#include "soundclass.h"
 #include <dinput.h>
+#include <set>
+#include <map>
 
 
 /////////////
@@ -39,8 +47,20 @@ const XMVECTOR DefaultRight = XMVectorSet(1.0f, 0.0f, 0.0f, 1.0f);
 ////////////////////////////////////////////////////////////////////////////////
 // Class name: GraphicsClass
 ////////////////////////////////////////////////////////////////////////////////
-class GraphicsClass
+class GraphicsClass // GameManager
 {
+public:
+    enum ShaderName
+    {
+        SkyBoxShader = 0,
+        TextureShader,
+        FogShader,
+        FireShader,
+        LightShader,
+        ParticleShader,
+        Size
+    };
+
 public:
 	GraphicsClass();
 	GraphicsClass(const GraphicsClass&);
@@ -48,22 +68,32 @@ public:
 
 	bool Initialize(int, int, HWND);
 	void Shutdown();
-	bool Frame(const std::pair<float, float>*, const BYTE*, int, int, float);
+	bool Frame(const DIMOUSESTATE&, const BYTE*, int, int, float);
+
+    void AddRenderObject(ShaderName, ObjectClass*);
+    bool RemoveRenderObject(ObjectClass*);
 
 private:
 	bool Render();
 
 private:
 	D3DClass* m_D3D;
-	CameraClass* m_Camera;
-	PlaneModelClass* m_Player;
-	PlaneModelClass* m_EnemyAirCraft;
+    CameraManagerClass* m_CameraManager;
+    PlayerManagerClass* m_PlayerManager;
+    UIManagerClass* m_UIManager;
+    EnemyManagerClass* m_EnemyManager;
+
+    LightClass* m_Light;
+    
+    ModelClass* m_Player;
+    ModelClass* m_EnemyAirCraft;
 	ModelClass* m_Target;
 	ModelClass* m_Ground_Mountain;
 	ModelClass* m_Cube;
+    BitmapClass* m_Aim;
+    ParticleSystemClass* m_ParticleSystem;
 
 	LightShaderClass* m_LightShader;
-	LightClass* m_Light;
 
 	TextureShaderClass* m_TextureShader;
 
@@ -72,9 +102,15 @@ private:
 	FireShaderClass* m_FireShader;
 
     ParticleShaderClass* m_ParticleShader;
-    ParticleSystemClass* m_ParticleSystem;
+    
+    // m_RenderObjectList[ ShaderName ][ objectIndex ]
+    vector<set<ObjectClass*>> m_RenderObjectList;
 
 	TextClass* m_Text;
+
+    SoundClass* m_Sound;
+
+    float m_ScreenWidth, m_ScreentHeight;
 };
 
 #endif

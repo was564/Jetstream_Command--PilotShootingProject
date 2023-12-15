@@ -26,10 +26,11 @@ SkyBoxShaderClass::~SkyBoxShaderClass()
 }
 
 
-bool SkyBoxShaderClass::Initialize(ID3D11Device* device, HWND hwnd, CameraClass* camera)
+bool SkyBoxShaderClass::Initialize(ID3D11Device* device, HWND hwnd, XMMATRIX baseViewMatrix)
 {
 	bool result;
-	m_Camera = camera;
+
+    m_baseViewMatrix = baseViewMatrix;
 
 	// Initialize the vertex and pixel shaders.
 	result = LoadTexture(device, L"./data/skymap.dds");
@@ -45,7 +46,7 @@ bool SkyBoxShaderClass::Initialize(ID3D11Device* device, HWND hwnd, CameraClass*
 		return false;
 	}
 
-	result = CreateSphere(20, 20, device);
+	result = CreateSphere(10, 10, device);
 	if (!result) {
 		return false;
 	}
@@ -102,13 +103,13 @@ void SkyBoxShaderClass::Shutdown()
 
 
 bool SkyBoxShaderClass::Render(ID3D11DeviceContext* deviceContext, XMMATRIX worldMatrix, XMMATRIX viewMatrix,
-	XMMATRIX projectionMatrix)
+	XMMATRIX projectionMatrix, XMFLOAT3 cameraPosition)
 {
 	bool result;
 
 
 	// Set the shader parameters that it will use for rendering.
-	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix);
+	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, cameraPosition);
 	if (!result)
 	{
 		return false;
@@ -329,7 +330,7 @@ void SkyBoxShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND 
 
 
 bool SkyBoxShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, XMMATRIX worldMatrix, XMMATRIX viewMatrix,
-	XMMATRIX projectionMatrix)
+	XMMATRIX projectionMatrix, XMFLOAT3 cameraPosition)
 {
 	HRESULT result;
 	//Set the grounds vertex buffer
@@ -353,9 +354,9 @@ bool SkyBoxShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, 
 	projectionMatrix = XMMatrixTranspose(projectionMatrix);
 
 	XMMATRIX sphereWorld = worldMatrix;
-	XMFLOAT3 cameraPosition = m_Camera->GetPosition();
 	sphereWorld *= XMMatrixScaling(5.0f, 5.0f, 5.0f);
-	sphereWorld *= XMMatrixTranslationFromVector(XMLoadFloat3(&cameraPosition));
+	//sphereWorld *= XMMatrixTranslationFromVector(XMLoadFloat3(&cameraPosition));
+    sphereWorld *= XMMatrixTranslation(100.0f, 100.0f, 100.0f);
 
 	result = deviceContext->Map(m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result))
@@ -368,7 +369,7 @@ bool SkyBoxShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, 
 
 	// Copy the matrices into the constant buffer.
 	dataPtr->world = sphereWorld;
-	dataPtr->view = viewMatrix;
+	dataPtr->view = m_baseViewMatrix;
 	dataPtr->projection = projectionMatrix;
 
 	// Unlock the constant buffer.

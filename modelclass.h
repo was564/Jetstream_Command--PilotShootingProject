@@ -17,6 +17,7 @@ using namespace DirectX;
 // MY CLASS INCLUDES //
 ///////////////////////
 #include "textureclass.h"
+#include "objectclass.h"
 
 #include <fstream>
 using namespace std;
@@ -24,7 +25,7 @@ using namespace std;
 ////////////////////////////////////////////////////////////////////////////////
 // Class name: ModelClass
 ////////////////////////////////////////////////////////////////////////////////
-class ModelClass
+class ModelClass : public ObjectClass
 {
 private:
 	struct VertexType
@@ -60,7 +61,7 @@ public:
 
 	
 	int GetIndexCount();
-	ID3D11ShaderResourceView* GetTexture();
+	ID3D11ShaderResourceView* GetTexture() override;
     ID3D11ShaderResourceView* GetTexture1();
     ID3D11ShaderResourceView* GetTexture2();
     ID3D11ShaderResourceView* GetTexture3();
@@ -90,6 +91,7 @@ private:
     TextureClass* m_Texture3;
 
 	ModelType* m_model;
+
 };
 
 #endif

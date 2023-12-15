@@ -9,7 +9,8 @@
 GraphicsClass::GraphicsClass()
 {
 	m_D3D = 0;
-	m_Camera = 0;
+	m_CameraManager = 0;
+    m_PlayerManager = 0;
 	m_Player = 0;
 	m_EnemyAirCraft = 0;
 	m_TextureShader = 0;
@@ -19,6 +20,7 @@ GraphicsClass::GraphicsClass()
 	m_SkyboxShader = 0;
 	m_Light = 0;
 	m_LightShader = 0;
+    m_Sound = 0;
 }
 
 
@@ -38,6 +40,11 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	XMMATRIX baseViewMatrix;
 
+    m_ScreenWidth = screenWidth;
+    m_ScreentHeight = screenHeight;
+
+    m_RenderObjectList.resize(ShaderName::Size);
+
 	// Create the Direct3D object.
 	m_D3D = new D3DClass;
 	if(!m_D3D)
@@ -53,14 +60,64 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
+    // Create the model object.
+    m_Player = new ModelClass;
+    if (!m_Player)
+    {
+        return false;
+    }
+
+    // Initialize the model object.
+    result = m_Player->Initialize(m_D3D->GetDevice(), L"./data/PlayerModel.obj", L"./data/PlayerModel.dds");
+    if (!result)
+    {
+        MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
+        return false;
+    }
+
+    m_Player->SetScale(0.4f, 0.4f, 0.4f);
+
 	// Create the camera object.
-	m_Camera = new CameraClass;
-	if(!m_Camera)
+	m_CameraManager = new CameraManagerClass;
+	if(!m_CameraManager)
 	{
 		return false;
 	}
-
+    
+    result = m_CameraManager->Initialize(m_Player, XMFLOAT3(0.0f, -2.0f, 0.0f));
+    if (!result)
+    {
+        MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
+        return false;
+    }
+    m_CameraManager->GetCameraInstance()->GetViewMatrix(baseViewMatrix);
 	
+    m_PlayerManager = new PlayerManagerClass;
+    if (!m_PlayerManager)
+    {
+        return false;
+    }
+
+    result = m_PlayerManager->Initialize(m_D3D->GetDevice(), m_Player, this);
+    if (!result)
+    {
+        MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
+        return false;
+    }
+
+    m_EnemyManager = new EnemyManagerClass;
+    if (!m_EnemyManager)
+    {
+        return false;
+    }
+
+    result = m_EnemyManager->Initialize(m_D3D->GetDevice(), this, 5);
+    if (!result)
+    {
+        MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
+        return false;
+    }
+
 	m_Cube = new ModelClass;
 	if (!m_Cube)
 	{
@@ -74,24 +131,11 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
 		return false;
 	}
+    m_Cube->SetPosition(5.0f, 5.0f, 5.0f);
+	
 
 	// Create the model object.
-	m_Player = new PlaneModelClass;
-	if(!m_Player)
-	{
-		return false;
-	}
-
-	// Initialize the model object.
-	result = m_Player->Initialize(m_D3D->GetDevice(), L"./data/PlayerModel.obj", L"./data/PlayerModel.dds");
-	if(!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
-		return false;
-	}
-
-	// Create the model object.
-	m_EnemyAirCraft = new PlaneModelClass;
+	m_EnemyAirCraft = new ModelClass;
 	if (!m_EnemyAirCraft)
 	{
 		return false;
@@ -104,6 +148,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
 		return false;
 	}
+    m_EnemyAirCraft->SetPosition(20.0f, 15.0f, 0.0f);
 
 	// Create the model object.
 	m_Target = new ModelClass;
@@ -119,6 +164,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
 		return false;
 	}
+    m_Target->SetPosition(-15.0f, 25.0f, 0.0f);
 
 	// Initialize the model object.
 	m_Ground_Mountain = new ModelClass;
@@ -134,6 +180,8 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
 		return false;
 	}
+    m_Ground_Mountain->SetScale(40.0f, 10.0f, 40.0f);
+    m_Ground_Mountain->SetPosition(0.0f, -45.0f, 0.0f);
 
 	// Create the texture shader object.
 	m_TextureShader = new TextureShaderClass;
@@ -149,15 +197,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		MessageBox(hwnd, L"Could not initialize the texture shader object.", L"Error", MB_OK);
 		return false;
 	}
-
-	
-	// Create the texture shader object.
-	m_SkyboxShader = new SkyBoxShaderClass;
-	if (!m_SkyboxShader)
-	{
-		return false;
-	}
-	
 
 	// Create the light shader object.
 	m_LightShader = new LightShaderClass;
@@ -189,12 +228,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Light->SetSpecularPower(50.0f);
 
 
-    // Set the initial position of the camera.
-    m_Camera->SetPosition(0.0f, -2.0f, 0.0f);
-    m_Camera->SetRotation(0.0f, 0.0f, 0.0f);
-
-	m_Camera->Render();
-	m_Camera->GetViewMatrix(baseViewMatrix);
+    
 
 	// Create the text object.
 	m_Text = new TextClass;
@@ -216,19 +250,19 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	{
 		return false;
 	}
-	result = m_SkyboxShader->Initialize(m_D3D->GetDevice(), hwnd, m_Camera);
+	result = m_SkyboxShader->Initialize(m_D3D->GetDevice(), hwnd, baseViewMatrix);
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the text object.", L"Error", MB_OK);
 		return false;
 	}
-
-
+    
 	m_FogShader = new FogShaderClass;
 	if (!m_FogShader)
 	{
 		return false;
 	}
+
 	// Initialize the fog shader object.
 	result = m_FogShader->Initialize(m_D3D->GetDevice(), hwnd);
 	if (!result)
@@ -278,6 +312,46 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     {
         return false;
     }
+    
+    // Create the bitmap object.
+    m_Aim = new BitmapClass;
+    if (!m_Aim)
+    {
+        return false;
+    }
+
+    // Initialize the bitmap object.
+    result = m_Aim->Initialize(m_D3D->GetDevice(), hwnd, screenWidth, screenHeight, L"./data/aim.dds", 300, 300, baseViewMatrix);
+    if (!result)
+    {
+        MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
+        return false;
+    }
+
+    /*
+    // Create the sound object.
+    m_Sound = new SoundClass;
+    if (!m_Sound)
+    {
+        return false;
+    }
+
+    // Initialize the sound object.
+    result = m_Sound->Initialize(hwnd);
+    if (!result)
+    {
+        MessageBox(hwnd, L"Could not initialize Direct Sound.", L"Error", MB_OK);
+        return false;
+    }
+    */
+
+    m_RenderObjectList[ShaderName::LightShader].insert(m_Player);
+    //m_RenderObjectList[ShaderName::LightShader].insert(m_EnemyAirCraft);
+    //m_RenderObjectList[ShaderName::LightShader].insert(m_Target);
+    //m_RenderObjectList[ShaderName::FireShader].insert(m_Cube);
+    m_RenderObjectList[ShaderName::FogShader].insert(m_Ground_Mountain);
+    //m_RenderObjectList[ShaderName::ParticleShader].insert(m_ParticleSystem);
+
 
 	return true;
 }
@@ -382,11 +456,25 @@ void GraphicsClass::Shutdown()
 	}
 
 	// Release the camera object.
-	if(m_Camera)
+	if(m_CameraManager)
 	{
-		delete m_Camera;
-		m_Camera = 0;
+		delete m_CameraManager;
+        m_CameraManager = 0;
 	}
+
+    // Release the camera object.
+    if (m_PlayerManager)
+    {
+        m_PlayerManager->Shutdown();
+        delete m_PlayerManager;
+        m_PlayerManager = 0;
+    }
+
+    if (m_UIManager)
+    {
+        delete m_PlayerManager;
+        m_PlayerManager = 0;
+    }
 
 	// Release the D3D object.
 	if(m_D3D)
@@ -396,34 +484,71 @@ void GraphicsClass::Shutdown()
 		m_D3D = 0;
 	}
 
+    /*
+    // Release the sound object.
+    if (m_Sound)
+    {
+        m_Sound->Shutdown();
+        delete m_Sound;
+        m_Sound = 0;
+    }
+    */
 	return;
 }
 
 
 
 // how to use: mouseMovingValue (lx, ly), keyboard[ key ]
-bool GraphicsClass::Frame(const std::pair<float, float>* mouseMovingValue, const BYTE* keyboardState, 
+bool GraphicsClass::Frame(const DIMOUSESTATE& mouseState, const BYTE* keyboardState, 
 	int fps, int cpu, float frameTime)
 {
-	#define GetKeyDown(key) keyboardState[key] & 0x80
 
 	bool result;
 
-	static float speed = 0.6f * 0.01f; // 0.01f = 1 / average frame
-	static float mouseSensibility = 0.1f;
+    // frame
 
-	if (GetKeyDown(DIK_A)) m_Player->Rotate(0.0f, -1.0f, 0.0f);
-	if (GetKeyDown(DIK_D)) m_Player->Rotate(0.0f, 1.0f, 0.0f);
-	if (GetKeyDown(DIK_W)) m_Player->Rotate(-1.0f, 0.0f, 0.0f);
-	if (GetKeyDown(DIK_S)) m_Player->Rotate(1.0f, 0.0f, 0.0f);
-	m_Camera->Move(m_Player->GetForward(), -speed);
-    m_Player->SetPosition(m_Camera->GetLookAtPosition());
-	m_Camera->Rotate(
-		mouseMovingValue->second * mouseSensibility, 
-		mouseMovingValue->first * mouseSensibility,
-		0.0f);
+    m_PlayerManager->Frame(mouseState, keyboardState, frameTime, m_D3D->GetDeviceContext());
+    m_CameraManager->Frame(mouseState, keyboardState);
 
+    m_EnemyManager->Frame(m_PlayerManager->GetMissile());
     m_ParticleSystem->Frame(frameTime, m_D3D->GetDeviceContext());
+
+    // text
+    XMFLOAT3 playerPosition = m_Player->GetPosition();
+
+    // Reference : https://stackoverflow.com/questions/29200635/convert-float-to-string-with-precision-number-of-decimal-digits-specified
+    stringstream ss;
+    ss << std::fixed << std::setprecision(2) << playerPosition.x << " " << playerPosition.y << " " << playerPosition.z;
+    string positionString[3];
+    string token;
+    for (int i = 0; ss >> token; i++) {
+        positionString[i] = token;
+    }
+    ss.clear();
+
+    string sentence =
+        "CurrentPosition : (" + positionString[0] + ", " + positionString[1] + ", " + positionString[2] + ")";
+    result = m_Text->UpdateSentence(0, sentence.c_str(), 100, 100, 1.0f, 1.0f, 1.0f, m_D3D->GetDeviceContext());
+    if (!result)
+    {
+        return false;
+    }
+
+    XMFLOAT3 playerRotation = m_Player->GetRotation();
+    ss << std::fixed << std::setprecision(2) << playerRotation.x << " " << playerRotation.y << " " << playerRotation.z;
+    string rotationString[3];
+    for (int i = 0; ss >> token; i++) {
+        rotationString[i] = token;
+    }
+    ss.clear();
+
+    sentence =
+        "CurrentRotation : (" + rotationString[0] + ", " + rotationString[1] + ", " + rotationString[2] + ")";
+    result = m_Text->UpdateSentence(1, sentence.c_str(), 100, 130, 1.0f, 1.0f, 1.0f, m_D3D->GetDeviceContext());
+    if (!result)
+    {
+        return false;
+    }
 
 	// Set the frames per second.
 	result = m_Text->SetFps(fps, m_D3D->GetDeviceContext());
@@ -449,12 +574,31 @@ bool GraphicsClass::Frame(const std::pair<float, float>* mouseMovingValue, const
 	return true;
 }
 
+void GraphicsClass::AddRenderObject(ShaderName shader, ObjectClass* object)
+{
+    m_RenderObjectList[shader].insert(object);
+}
+
+bool GraphicsClass::RemoveRenderObject(ObjectClass* object)
+{
+    for (set<ObjectClass*>& objectSet : m_RenderObjectList)
+    {
+        set<ObjectClass*>::iterator iter = objectSet.find(object);
+        if (iter == objectSet.end()) continue;
+        else
+        {
+            objectSet.erase(iter);
+            return true;
+        }
+    }
+
+    return false;
+}
 
 bool GraphicsClass::Render()
 {
 	XMMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
-	XMMATRIX playerMatrix, enemyAirCraftMatrix, targetMatrix, groundMatrix, burnedCubeMatrix, particleMatrix;
-    XMFLOAT3 particlePosition, cameraPosition;
+    XMFLOAT3 cameraPosition, actualCameraPosition;
 	bool result;
 
 	static float rotationYValue = 0.0f;
@@ -463,220 +607,218 @@ bool GraphicsClass::Render()
 
 	int polygonCount = 0;
 	int objectCount = 0;
-	float fogColor, fogStart, fogEnd;
-	// Set the color of the fog to grey.
-	fogColor = 0.2f;
 
-	// Set the start and end of the fog.
-	fogStart = 0.0f;
-	fogEnd = 100.0f;
+    // Set the color of the fog to grey.
+    float Red = 0.4f;
+    float Green = 0.4f;
+    float Blue = 1.0f;
 
+
+    cameraPosition = m_CameraManager->GetCameraInstance()->GetPosition();
+
+    actualCameraPosition = m_CameraManager->GetCameraInstance()->GetActualPosition();
 
 	// Clear the buffers to begin the scene.
-	m_D3D->BeginScene(fogColor, fogColor, fogColor, 1.0f);
+	m_D3D->BeginScene(Red, Green, Blue, 1.0f);
 
 	// Generate the view matrix based on the camera's position.
-	m_Camera->Render();
+	m_CameraManager->GetCameraInstance()->Render();
 
 	// Get the world, view, and projection matrices from the camera and d3d objects.
-	m_Camera->GetViewMatrix(viewMatrix);
+    m_CameraManager->GetCameraInstance()->GetViewMatrix(viewMatrix);
 	m_D3D->GetWorldMatrix(worldMatrix);
 	m_D3D->GetProjectionMatrix(projectionMatrix);
-
 	m_D3D->GetOrthoMatrix(orthoMatrix);
 	
 	m_D3D->TurnOnCullNone();
 	/*
-	result = m_SkyboxShader->Render(m_D3D->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix);
+	result = m_SkyboxShader->Render(m_D3D->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix, actualCameraPosition);
 	if (!result)
 	{
 		return false;
 	}
 	*/
 	m_D3D->TurnOffCullNone();
+    
 
-	groundMatrix = worldMatrix;
-	groundMatrix *= XMMatrixScaling(30.0f, 10.0f, 30.0f);
-	groundMatrix *= XMMatrixTranslation(0.0f, -40.0f, 0.0f);
-	m_Ground_Mountain->Render(m_D3D->GetDeviceContext());
+    // Set the start and end of the fog.
+    float fogStart = 0.0f;
+    float fogEnd = 100.0f;
 
-	result = m_FogShader->Render(m_D3D->GetDeviceContext(), m_Ground_Mountain->GetIndexCount(), groundMatrix, viewMatrix, projectionMatrix,
-		m_Ground_Mountain->GetTexture(), fogStart, fogEnd);
-	if (!result)
-	{
-		return false;
-	}
-	polygonCount += m_Ground_Mountain->GetIndexCount();
-	objectCount += 1;
-	// Render the model using the texture shader.
-	/*
-	result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Ground_Mountain->GetIndexCount(),
-		groundMatrix, viewMatrix, projectionMatrix, m_Ground_Mountain->GetTexture());
-	if (!result)
-	{
-		return false;
-	}
-	*/
+    for (ObjectClass* model : m_RenderObjectList[ShaderName::FogShader]) 
+    {
+        XMFLOAT3 modelScale = model->GetScale();
+        XMFLOAT3 modelRotation = model->GetRotation();
+        XMFLOAT3 modelPosition = model->GetPosition();
 
-	// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	m_Player->Render(m_D3D->GetDeviceContext());
-	XMFLOAT3 playerRotation = m_Player->GetRotation();
-	playerMatrix = worldMatrix;
-	playerMatrix *= XMMatrixScaling(0.4f, 0.4f, 0.4f);
-	playerMatrix *= XMMatrixRotationX(playerRotation.x);
-	playerMatrix *= XMMatrixRotationY(playerRotation.y);
-	playerMatrix *= XMMatrixRotationZ(playerRotation.z);
-    playerMatrix *= XMMatrixTranslationFromVector(m_Player->GetPosition());
-	// Render the model using the texture shader.
-	result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Player->GetIndexCount(),
-		playerMatrix, viewMatrix, projectionMatrix, m_Player->GetTexture(),
-		m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
-		m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
-	if(!result)
-	{
-		return false;
-	}
-	polygonCount += m_Player->GetIndexCount();
-	objectCount += 1;
+        XMMATRIX modelMatrix = worldMatrix;
+        modelMatrix *= XMMatrixScaling(modelScale.x, modelScale.y, modelScale.z);
+        modelMatrix *= XMMatrixRotationX(modelRotation.x * 0.0174532925f);
+        modelMatrix *= XMMatrixRotationY(modelRotation.y * 0.0174532925f);
+        modelMatrix *= XMMatrixRotationZ(modelRotation.z * 0.0174532925f);
+        modelMatrix *= XMMatrixTranslation(modelPosition.x, modelPosition.y, modelPosition.z);
+        model->Render(m_D3D->GetDeviceContext());
+        // Render the square model using the fire shader.
+        result = m_FogShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), modelMatrix, viewMatrix, projectionMatrix,
+            model->GetTexture(), fogStart, fogEnd);
+        if (!result)
+        {
+            return false;
+        }
+        polygonCount += model->GetIndexCount();
+        objectCount += 1;
+    }
 
-	m_EnemyAirCraft->Render(m_D3D->GetDeviceContext());
-	enemyAirCraftMatrix = worldMatrix;
-	enemyAirCraftMatrix *= XMMatrixTranslation(20.0f, 15.0f, 0.0f);
-	// Render the model using the texture shader.
-	result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_EnemyAirCraft->GetIndexCount(),
-		enemyAirCraftMatrix, viewMatrix, projectionMatrix, m_EnemyAirCraft->GetTexture(),
-		m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
-		m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
-	if (!result)
-	{
-		return false;
-	}
-	polygonCount += m_EnemyAirCraft->GetIndexCount();
-	objectCount += 1;
+    for (ObjectClass* model : m_RenderObjectList[ShaderName::LightShader])
+    {
+        XMFLOAT3 modelScale = model->GetScale();
+        XMFLOAT3 modelRotation = model->GetRotation();
+        XMFLOAT3 modelPosition = model->GetPosition();
 
-	m_Target->Render(m_D3D->GetDeviceContext());
-	targetMatrix = worldMatrix;
-	targetMatrix = XMMatrixRotationZ(90.0f);
-	targetMatrix = XMMatrixMultiply(targetMatrix, XMMatrixTranslation(-15.0f, 25.0f, 0.0f));
+        XMMATRIX modelMatrix = worldMatrix;
+        modelMatrix *= XMMatrixScaling(modelScale.x, modelScale.y, modelScale.z);
+        modelMatrix *= XMMatrixRotationX(modelRotation.x * 0.0174532925f);
+        modelMatrix *= XMMatrixRotationY(modelRotation.y * 0.0174532925f);
+        modelMatrix *= XMMatrixRotationZ(modelRotation.z * 0.0174532925f);
+        modelMatrix *= XMMatrixTranslation(modelPosition.x, modelPosition.y, modelPosition.z);
+        model->Render(m_D3D->GetDeviceContext());
+        // Render the square model using the fire shader.
+        result = m_LightShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(),
+            modelMatrix, viewMatrix, projectionMatrix, model->GetTexture(),
+            m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
+            cameraPosition, m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
+        if (!result)
+        {
+            return false;
+        }
+        polygonCount += model->GetIndexCount();
+        objectCount += 1;
+    }
 	
-	// Render the model using the texture shader.
-	result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Target->GetIndexCount(),
-		targetMatrix, viewMatrix, projectionMatrix, m_Target->GetTexture(),
-		m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
-		m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
-	if (!result)
-	{
-		return false;
-	}
-	polygonCount += m_Target->GetIndexCount();
-	objectCount += 1;
-
-	// FireShader
-	XMFLOAT3 scrollSpeeds, scales;
-	XMFLOAT2 distortion1, distortion2, distortion3;
-	float distortionScale, distortionBias;
-	static float frameTime = 0.0f;
-
-	// Increment the frame time counter.
-	frameTime += 0.01f;
-	if (frameTime > 1000.0f)
-	{
-		frameTime = 0.0f;
-	}
-
-	// Set the three scrolling speeds for the three different noise textures.
-	scrollSpeeds = XMFLOAT3(1.3f, 2.1f, 2.3f);
-
-	// Set the three scales which will be used to create the three different noise octave textures.
-	scales = XMFLOAT3(1.0f, 2.0f, 3.0f);
-
-	// Set the three different x and y distortion factors for the three different noise textures.
-	distortion1 = XMFLOAT2(0.1f, 0.2f);
-	distortion2 = XMFLOAT2(0.1f, 0.3f);
-	distortion3 = XMFLOAT2(0.1f, 0.1f);
-
-	// The the scale and bias of the texture coordinate sampling perturbation.
-	distortionScale = 0.8f;
-	distortionBias = 0.5f;
 
 	m_D3D->TurnOnAlphaBlending();
 
+    
 
-    burnedCubeMatrix = worldMatrix;
-    burnedCubeMatrix *= XMMatrixTranslation(5.0f, 5.0f, 5.0f);
-    m_Cube->Render(m_D3D->GetDeviceContext());
 
-    // Render the square model using the fire shader.
-    result = m_FireShader->Render(m_D3D->GetDeviceContext(), m_Cube->GetIndexCount(), burnedCubeMatrix, viewMatrix, projectionMatrix,
-        m_Cube->GetTexture1(), m_Cube->GetTexture2(), m_Cube->GetTexture3(), frameTime, scrollSpeeds,
-        scales, distortion1, distortion2, distortion3, distortionScale, distortionBias);
-    if (!result)
+    // FireShader
+    XMFLOAT3 scrollSpeeds, scales;
+    XMFLOAT2 distortion1, distortion2, distortion3;
+    float distortionScale, distortionBias;
+
+    static float frameTime = 0.0f;
+    // Increment the frame time counter.
+    frameTime += 0.01f;
+    if (frameTime > 1000.0f)
     {
-        return false;
+        frameTime = 0.0f;
     }
-    polygonCount += m_Cube->GetIndexCount();
-    objectCount += 1;
 
-    m_ParticleSystem->Render(m_D3D->GetDeviceContext());
+    // Set the three scrolling speeds for the three different noise textures.
+    scrollSpeeds = XMFLOAT3(1.3f, 2.1f, 2.3f);
+
+    // Set the three scales which will be used to create the three different noise octave textures.
+    scales = XMFLOAT3(1.0f, 2.0f, 3.0f);
+
+    // Set the three different x and y distortion factors for the three different noise textures.
+    distortion1 = XMFLOAT2(0.1f, 0.2f);
+    distortion2 = XMFLOAT2(0.1f, 0.3f);
+    distortion3 = XMFLOAT2(0.1f, 0.1f);
+
+    // The the scale and bias of the texture coordinate sampling perturbation.
+    distortionScale = 0.8f;
+    distortionBias = 0.5f;
+
+    for (ObjectClass* model : m_RenderObjectList[ShaderName::FireShader]) {
+        XMFLOAT3 modelScale = model->GetScale();
+        XMFLOAT3 modelRotation = model->GetRotation();
+        XMFLOAT3 modelPosition = model->GetPosition();
+
+        XMMATRIX modelMatrix = worldMatrix;
+        modelMatrix *= XMMatrixScaling(modelScale.x, modelScale.y, modelScale.z);
+        modelMatrix *= XMMatrixRotationX(modelRotation.x * 0.0174532925f);
+        modelMatrix *= XMMatrixRotationY(modelRotation.y * 0.0174532925f);
+        modelMatrix *= XMMatrixRotationZ(modelRotation.z * 0.0174532925f);
+        modelMatrix *= XMMatrixTranslation(modelPosition.x, modelPosition.y, modelPosition.z);
+        model->Render(m_D3D->GetDeviceContext());
+        // Render the square model using the fire shader.
+        result = m_FireShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), modelMatrix, viewMatrix, projectionMatrix,
+            model->GetTexture1(), model->GetTexture2(), model->GetTexture3(), frameTime, scrollSpeeds,
+            scales, distortion1, distortion2, distortion3, distortionScale, distortionBias);
+        if (!result)
+        {
+            return false;
+        }
+        polygonCount += model->GetIndexCount();
+        objectCount += 1;
+    }
 
     // for billboarding
-    cameraPosition = m_Camera->GetActualPosition();
-    particlePosition = XMFLOAT3(0.0f, 1.0f, 0.0f);
-    // 아크 탄젠트 함수를 사용하여 현재 카메라 위치를 향하도록 빌보드 모델에 적용해야하는 회전을 계산합니다.
-    double angle = atan2(particlePosition.x - cameraPosition.x, particlePosition.z - cameraPosition.z) * (180.0 / XM_PI);
+    cameraPosition = m_CameraManager->GetCameraInstance()->GetActualPosition();
 
-    // 회전을 라디안으로 변환합니다.
-    float rotation = (float)angle * 0.0174532925f;
-
-    particleMatrix = worldMatrix;
-    particleMatrix *= XMMatrixRotationY(rotation);
-    particleMatrix *= XMMatrixTranslationFromVector(XMLoadFloat3(&particlePosition));
-    // Render the model using the texture shader.
-    result = m_ParticleShader->Render(m_D3D->GetDeviceContext(), m_ParticleSystem->GetIndexCount(), particleMatrix, viewMatrix, projectionMatrix,
-        m_ParticleSystem->GetTexture());
-    if (!result)
+    for (ObjectClass* model : m_RenderObjectList[ShaderName::ParticleShader])
     {
-        return false;
+        XMFLOAT3 modelScale = model->GetScale();
+        XMFLOAT3 modelPosition = model->GetPosition();
+
+        // 아크 탄젠트 함수를 사용하여 현재 카메라 위치를 향하도록 빌보드 모델에 적용해야하는 회전을 계산합니다.
+        double angle = atan2(modelPosition.x - cameraPosition.x, modelPosition.z - cameraPosition.z) * (180.0 / XM_PI);
+
+        // 회전을 라디안으로 변환합니다.
+        float rotation = (float)angle * 0.0174532925f;
+
+        XMMATRIX modelMatrix = worldMatrix;
+        modelMatrix *= XMMatrixScaling(modelScale.x, modelScale.y, modelScale.z);
+        modelMatrix *= XMMatrixRotationY(rotation);
+        modelMatrix *= XMMatrixTranslation(modelPosition.x, modelPosition.y, modelPosition.z);
+        model->Render(m_D3D->GetDeviceContext());
+
+        result = m_ParticleShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), modelMatrix, viewMatrix, projectionMatrix,
+            model->GetTexture());
+        if (!result)
+        {
+            return false;
+        }
+        polygonCount += model->GetIndexCount();
+        objectCount += 1;
     }
-    polygonCount += m_ParticleSystem->GetIndexCount();
-    objectCount += 1;
 
     // Turn off alpha blending.
     m_D3D->TurnOffAlphaBlending();
 
     // Turn off the Z buffer to begin all 2D rendering.
     m_D3D->TurnZBufferOff();
+
+    for (ObjectClass* model : m_RenderObjectList[ShaderName::TextureShader])
+    {
+        XMFLOAT3 modelScale = model->GetScale();
+        
+        XMMATRIX modelMatrix = worldMatrix;
+        modelMatrix *= XMMatrixScaling(modelScale.x, modelScale.y, modelScale.z);
+        model->Render(m_D3D->GetDeviceContext());
+
+        result = m_TextureShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), modelMatrix, viewMatrix, projectionMatrix,
+            model->GetTexture());
+        if (!result)
+        {
+            return false;
+        }
+        polygonCount += model->GetIndexCount();
+        objectCount += 1;
+    }
+
     // Turn on the alpha blending before rendering the text.
     m_D3D->TurnOnAlphaBlending();
 
-    // Reference : https://stackoverflow.com/questions/17249434/how-to-dump-xmmatrix-member-value
-    XMMATRIX mtxView = playerMatrix;
-    XMFLOAT4X4 fView;
-    XMStoreFloat4x4(&fView, mtxView);
-    float x = fView._41;
-    float y = fView._42;
-    float z = fView._43;
-
-    // Reference : https://stackoverflow.com/questions/29200635/convert-float-to-string-with-precision-number-of-decimal-digits-specified
-    stringstream ss;
-    ss << std::fixed << std::setprecision(2) << x << " " << y << " " << z;
-    string position[3];
-    string token;
-    for (int i = 0; ss >> token; i++) {
-        position[i] = token;
-    }
-
-    string sentence =
-        "CurrentPosition : (" + position[0] + ", " + position[1] + ", " + position[2] + ")";
-    result = m_Text->UpdateSentence(0, sentence.c_str(), 100, 100, 1.0f, 1.0f, 1.0f, m_D3D->GetDeviceContext());
-    if (!result)
+    if (m_CameraManager->GetMode() == CameraManagerClass::CameraMode::AimingMode)
     {
-        return false;
+        result = m_Aim->Render(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix);
+        if (!result)
+        {
+            return false;
+        }
     }
-
-    polygonCount += m_Text->GetTotalSentenceIndexCount();
-    m_Text->SetPolygons(polygonCount, m_D3D->GetDeviceContext());
-    m_Text->SetObjects(objectCount, m_D3D->GetDeviceContext());
+    
 
     // Render the text strings.
     result = m_Text->Render(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix);
@@ -684,6 +826,9 @@ bool GraphicsClass::Render()
     {
         return false;
     }
+    polygonCount += m_Text->GetTotalSentenceIndexCount();
+    m_Text->SetPolygons(polygonCount, m_D3D->GetDeviceContext());
+    m_Text->SetObjects(objectCount, m_D3D->GetDeviceContext());
 
     // Turn the Z buffer back on now that all 2D rendering has completed.
     m_D3D->TurnZBufferOn();

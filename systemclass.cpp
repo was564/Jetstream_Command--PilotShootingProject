@@ -96,6 +96,9 @@ bool SystemClass::Initialize()
 		MessageBox(m_hwnd, L"Could not initialize the Timer object.", L"Error", MB_OK);
 		return false;
 	}
+
+    
+    
 	
 	return true;
 }
@@ -207,7 +210,7 @@ bool SystemClass::Frame()
 	}
 	
 	// Do the frame processing for the graphics object.
-	result = m_Graphics->Frame(m_Input->GetMouseMovingValues(), m_Input->GetKeyboardState(),
+	result = m_Graphics->Frame(m_Input->GetMouseState(), m_Input->GetKeyboardState(),
 		m_Fps->GetFps(), m_Cpu->GetCpuPercentage(), m_Timer->GetTime());
 	if(!result)
 	{
@@ -305,11 +308,11 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 	}
 	else
 	{
-		/*
+		
 		// If windowed then set it to 800x600 resolution.
-		screenWidth  = 800;
-		screenHeight = 600;
-		*/
+		screenWidth  = 1600;
+		screenHeight = 1200;
+		
 
 		// Place the window in the middle of the screen.
 		posX = (GetSystemMetrics(SM_CXSCREEN) - screenWidth)  / 2;

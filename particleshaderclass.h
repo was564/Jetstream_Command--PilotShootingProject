@@ -11,6 +11,8 @@
 #include <d3d11.h>
 #include <directxmath.h>
 #include <d3dcompiler.h>
+#include "shaderinterface.h"
+
 #include <fstream>
 
 using namespace std;
@@ -20,7 +22,7 @@ using namespace DirectX;
 ////////////////////////////////////////////////////////////////////////////////
 // Class name: ParticleShaderClass
 ////////////////////////////////////////////////////////////////////////////////
-class ParticleShaderClass
+class ParticleShaderClass : public IShader
 {
 private:
 	struct MatrixBufferType

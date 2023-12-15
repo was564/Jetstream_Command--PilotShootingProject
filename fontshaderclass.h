@@ -11,6 +11,7 @@
 #include <d3d11.h>
 #include <directxmath.h>
 #include <d3dcompiler.h>
+#include "shaderinterface.h"
 
 #include <fstream>
 
@@ -21,7 +22,7 @@ using namespace DirectX;
 ////////////////////////////////////////////////////////////////////////////////
 // Class name: FontShaderClass
 ////////////////////////////////////////////////////////////////////////////////
-class FontShaderClass
+class FontShaderClass : public IShader
 {
 private:
 	struct ConstantBufferType

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -20,11 +20,17 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlignedAllocationPolicy.h" />
+    <ClInclude Include="bitmapclass.h" />
     <ClInclude Include="cameraclass.h" />
+    <ClInclude Include="cameramanagerclass.h" />
+    <ClInclude Include="colliderclass.h" />
+    <ClInclude Include="collisionmanagerclass.h" />
     <ClInclude Include="colorshaderclass.h" />
     <ClInclude Include="cpuclass.h" />
     <ClInclude Include="d3dclass.h" />
     <ClInclude Include="DDSTextureLoader.h" />
+    <ClInclude Include="enemymanagerclass.h" />
+    <ClInclude Include="enemyplaneclass.h" />
     <ClInclude Include="fireshaderclass.h" />
     <ClInclude Include="fogshaderclass.h" />
     <ClInclude Include="fontclass.h" />
@@ -34,10 +40,16 @@
     <ClInclude Include="inputclass.h" />
     <ClInclude Include="lightclass.h" />
     <ClInclude Include="lightshaderclass.h" />
+    <ClInclude Include="missileclass.h" />
     <ClInclude Include="modelclass.h" />
+    <ClInclude Include="objectclass.h" />
+    <ClInclude Include="observerclass.h" />
+    <ClInclude Include="announceclass.h" />
+    <ClInclude Include="soundclass.h" />
+    <ClInclude Include="uimanagerclass.h" />
     <ClInclude Include="particleshaderclass.h" />
     <ClInclude Include="particlesystemclass.h" />
-    <ClInclude Include="planemodelclass.h" />
+    <ClInclude Include="playermanagerclass.h" />
     <ClInclude Include="skyboxshaderclass.h" />
     <ClInclude Include="systemclass.h" />
     <ClInclude Include="textclass.h" />
@@ -46,11 +58,17 @@
     <ClInclude Include="timerclass.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="bitmapclass.cpp" />
     <ClCompile Include="cameraclass.cpp" />
+    <ClCompile Include="cameramanagerclass.cpp" />
+    <ClCompile Include="colliderclass.cpp" />
+    <ClCompile Include="collisionmanagerclass.cpp" />
     <ClCompile Include="colorshaderclass.cpp" />
     <ClCompile Include="cpuclass.cpp" />
     <ClCompile Include="d3dclass.cpp" />
     <ClCompile Include="DDSTextureLoader.cpp" />
+    <ClCompile Include="enemymanagerclass.cpp" />
+    <ClCompile Include="enemyplaneclass.cpp" />
     <ClCompile Include="fireshaderclass.cpp" />
     <ClCompile Include="fogshaderclass.cpp" />
     <ClCompile Include="fontclass.cpp" />
@@ -61,10 +79,16 @@
     <ClCompile Include="lightclass.cpp" />
     <ClCompile Include="lightshaderclass.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="missileclass.cpp" />
     <ClCompile Include="modelclass.cpp" />
+    <ClCompile Include="announceclass.cpp" />
+    <ClCompile Include="objectclass.cpp" />
+    <ClCompile Include="soundclass.cpp" />
+    <ClCompile Include="uimanagerclass.cpp" />
     <ClCompile Include="particleshaderclass.cpp" />
     <ClCompile Include="particlesystemclass.cpp" />
-    <ClCompile Include="planemodelclass.cpp" />
+    <ClCompile Include="playermanagerclass.cpp" />
+    <ClCompile Include="shaderinterface.h" />
     <ClCompile Include="skyboxshaderclass.cpp" />
     <ClCompile Include="systemclass.cpp" />
     <ClCompile Include="textclass.cpp" />
@@ -101,6 +125,7 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
+    <Image Include="data\aim.dds" />
     <Image Include="data\alpha01.dds" />
     <Image Include="data\EnemyAirCraft.dds" />
     <Image Include="data\fire01.dds" />
@@ -208,7 +233,7 @@
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>

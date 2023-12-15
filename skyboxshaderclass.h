@@ -15,6 +15,7 @@
 #include <directxmath.h>
 #include <d3dcompiler.h>
 #include <dinput.h>
+#include "shaderinterface.h"
 
 #include <vector>
 #include <fstream>
@@ -42,7 +43,7 @@ struct Vertex	//Overloaded Vertex Structure
 ////////////////////////////////////////////////////////////////////////////////
 // Class name: SkyShaderClass
 ////////////////////////////////////////////////////////////////////////////////
-class SkyBoxShaderClass
+class SkyBoxShaderClass : public IShader
 {
 private:
 
@@ -58,17 +59,17 @@ public:
 	SkyBoxShaderClass(const SkyBoxShaderClass&);
 	~SkyBoxShaderClass();
 
-	bool Initialize(ID3D11Device*, HWND, CameraClass*);
+	bool Initialize(ID3D11Device*, HWND, XMMATRIX);
 	bool LoadTexture(ID3D11Device* device, const WCHAR* filename);
 	void Shutdown();
-	bool Render(ID3D11DeviceContext*, XMMATRIX, XMMATRIX, XMMATRIX);
+	bool Render(ID3D11DeviceContext*, XMMATRIX, XMMATRIX, XMMATRIX, XMFLOAT3);
 
 private:
 	bool InitializeShader(ID3D11Device*, HWND, const WCHAR*, const WCHAR*);
 	void ShutdownShader();
 	void OutputShaderErrorMessage(ID3D10Blob*, HWND, const WCHAR*);
 
-	bool SetShaderParameters(ID3D11DeviceContext*, XMMATRIX, XMMATRIX, XMMATRIX);
+	bool SetShaderParameters(ID3D11DeviceContext*, XMMATRIX, XMMATRIX, XMMATRIX, XMFLOAT3);
 	void RenderShader(ID3D11DeviceContext*);
 
 private:
@@ -93,7 +94,7 @@ private:
 	ID3D11SamplerState* m_CubesTexSamplerState;
 	ID3D11ShaderResourceView* m_smrv;
 
-	CameraClass* m_Camera;
+    XMMATRIX m_baseViewMatrix;
 };
 
 #endif

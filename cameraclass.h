@@ -27,6 +27,7 @@ public:
 	void SetPosition(float, float, float);
 	void SetPosition(const XMFLOAT3&);
 	void SetRotation(float, float, float);
+    void SetRotation(const XMFLOAT3&);
 
 	void MoveForward(float);
 	void MoveRight(float);

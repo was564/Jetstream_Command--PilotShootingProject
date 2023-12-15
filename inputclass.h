@@ -6,6 +6,7 @@
 
 // for extern value &c_dfDIMouse and &c_dfDIKeyboard
 #pragma comment(lib, "dinput8.lib")
+#pragma comment(lib, "dxguid.lib")
 
 #include <dinput.h>
 #include <algorithm>
@@ -26,6 +27,7 @@ public:
 	void Frame();
 
 	const std::pair<float, float>* GetMouseMovingValues();
+    const DIMOUSESTATE& GetMouseState();
 	const BYTE* GetKeyboardState();
 	bool GetKeyDown(int key);
 

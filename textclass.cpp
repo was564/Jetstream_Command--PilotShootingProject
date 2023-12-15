@@ -30,6 +30,7 @@ bool TextClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	bool result;
 
 	m_sentences.push_back(new SentenceType*);
+    m_sentences.push_back(new SentenceType*);
 
 	// Store the screen width and height.
 	m_screenWidth = screenWidth;
@@ -80,6 +81,19 @@ bool TextClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	{
 		return false;
 	}
+
+    result = InitializeSentence(m_sentences[1], 60, device);
+    if (!result)
+    {
+        return false;
+    }
+
+    // Now update the sentence vertex buffer with the new string information.
+    result = UpdateSentence(1, "CurrentRotation : ", 100, 130, 1.0f, 1.0f, 1.0f, deviceContext);
+    if (!result)
+    {
+        return false;
+    }
 	
 	result = InitializeSentence(&m_FpsSentence, 16, device);
 	if(!result)
@@ -201,7 +215,6 @@ bool TextClass::Render(ID3D11DeviceContext* deviceContext, XMMATRIX worldMatrix,
 			return false;
 		}
 	}
-	
 
 	// Draw the second sentence.
 	result = RenderSentence(deviceContext, m_CpuSentence, worldMatrix, orthoMatrix);

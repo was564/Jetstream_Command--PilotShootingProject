@@ -11,6 +11,7 @@
 #include <d3d11.h>
 #include <directxmath.h>
 #include <d3dcompiler.h>
+#include "shaderinterface.h"
 
 #include <fstream>
 
@@ -20,7 +21,7 @@ using namespace DirectX;
 ////////////////////////////////////////////////////////////////////////////////
 // Class name: FireShaderClass
 ////////////////////////////////////////////////////////////////////////////////
-class FireShaderClass
+class FireShaderClass : public IShader
 {
 private:
 	struct MatrixBufferType

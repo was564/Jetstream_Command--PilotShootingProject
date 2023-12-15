@@ -25,6 +25,7 @@
 #include "fpsclass.h"
 #include "cpuclass.h"
 #include "timerclass.h"
+#include "soundclass.h"
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -57,7 +58,10 @@ private:
 	int m_screenHeight = 600;
 
 	InputClass* m_Input;
+
 	GraphicsClass* m_Graphics;
+
+    
 
 	FpsClass* m_Fps;
 	CpuClass* m_Cpu;

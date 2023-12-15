@@ -135,6 +135,11 @@ const std::pair<float, float>* InputClass::GetMouseMovingValues()
 	return m_MouseMovingValues;
 }
 
+const DIMOUSESTATE& InputClass::GetMouseState()
+{
+    return m_MouseCurrentState;
+}
+
 const BYTE* InputClass::GetKeyboardState()
 {
 	return m_KeyboardState;

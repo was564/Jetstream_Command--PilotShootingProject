@@ -158,9 +158,9 @@ bool ParticleSystemClass::InitializeParticleSystem()
 
 
 	// Set the random deviation of where the particles can be located when emitted.
-	m_particleDeviationX = 0.5f;
-	m_particleDeviationY = 0.1f;
-	m_particleDeviationZ = 2.0f;
+	m_particleDeviationX = 0.4f;
+	m_particleDeviationY = 0.4f;
+	m_particleDeviationZ = 0.4f;
 
 	// Set the speed and speed variation of particles.
 	m_particleVelocity = 1.0f;
@@ -410,7 +410,7 @@ void ParticleSystemClass::UpdateParticles(float frameTime)
 	// Each frame we update all the particles by making them move downwards using their position, velocity, and the frame time.
 	for(i=0; i<m_currentParticleCount; i++)
 	{
-		m_particleList[i].positionY = m_particleList[i].positionY - (m_particleList[i].velocity * frameTime * 0.001f);
+		m_particleList[i].positionZ = m_particleList[i].positionZ - (m_particleList[i].velocity * frameTime * 0.001f);
 	}
 
 	return;
@@ -425,7 +425,7 @@ void ParticleSystemClass::KillParticles()
 	// Kill all the particles that have gone below a certain height range.
 	for(i=0; i<m_maxParticles; i++)
 	{
-		if((m_particleList[i].active == true) && (m_particleList[i].positionY < -3.0f))
+		if((m_particleList[i].active == true) && (m_particleList[i].positionZ < -3.0f))
 		{
 			m_particleList[i].active = false;
 			m_currentParticleCount--;

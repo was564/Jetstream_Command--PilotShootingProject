@@ -90,7 +90,43 @@
     <ClInclude Include="particleshaderclass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="planemodelclass.h">
+    <ClInclude Include="cameramanagerclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="playermanagerclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="uimanagerclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="announceclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="observerclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="objectclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="bitmapclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="enemymanagerclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="missileclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="colliderclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="collisionmanagerclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="enemyplaneclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="soundclass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -167,7 +203,43 @@
     <ClCompile Include="particleshaderclass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="planemodelclass.cpp">
+    <ClCompile Include="shaderinterface.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cameramanagerclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="playermanagerclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uimanagerclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="announceclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="objectclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="bitmapclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="enemymanagerclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="missileclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="colliderclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="collisionmanagerclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="enemyplaneclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="soundclass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -286,6 +358,9 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="data\star.dds">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\aim.dds">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
