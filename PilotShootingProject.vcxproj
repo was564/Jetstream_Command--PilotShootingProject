@@ -19,8 +19,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AimingCommand.h" />
     <ClInclude Include="AlignedAllocationPolicy.h" />
     <ClInclude Include="bitmapclass.h" />
+<<<<<<< Updated upstream
+=======
+    <ClInclude Include="Booster.h" />
+    <ClInclude Include="BoosterCommand.h" />
+    <ClInclude Include="Boosting.h" />
+    <ClInclude Include="BoostingCommand.h" />
+>>>>>>> Stashed changes
     <ClInclude Include="cameraclass.h" />
     <ClInclude Include="cameramanagerclass.h" />
     <ClInclude Include="colliderclass.h" />
@@ -38,6 +46,7 @@
     <ClInclude Include="fpsclass.h" />
     <ClInclude Include="graphicsclass.h" />
     <ClInclude Include="inputclass.h" />
+    <ClInclude Include="inputmanagerclass.h" />
     <ClInclude Include="lightclass.h" />
     <ClInclude Include="lightshaderclass.h" />
     <ClInclude Include="missileclass.h" />
@@ -45,7 +54,15 @@
     <ClInclude Include="objectclass.h" />
     <ClInclude Include="observerclass.h" />
     <ClInclude Include="announceclass.h" />
+<<<<<<< Updated upstream
     <ClInclude Include="soundclass.h" />
+=======
+    <ClInclude Include="Passive.h" />
+    <ClInclude Include="PassiveStateManager.h" />
+    <ClInclude Include="soundclass.h" />
+    <ClInclude Include="Stopping.h" />
+    <ClInclude Include="StoppingCommand.h" />
+>>>>>>> Stashed changes
     <ClInclude Include="uimanagerclass.h" />
     <ClInclude Include="particleshaderclass.h" />
     <ClInclude Include="particlesystemclass.h" />
@@ -56,26 +73,53 @@
     <ClInclude Include="textureclass.h" />
     <ClInclude Include="textureshaderclass.h" />
     <ClInclude Include="timerclass.h" />
+    <ClInclude Include="shaderinterface.h" />
+    <ClInclude Include="RotateUpCommand.h" />
+    <ClInclude Include="RotateRightCommand.h" />
+    <ClInclude Include="RotateLeftCommand.h" />
+    <ClInclude Include="RotateDownCommand.h" />
+    <ClInclude Include="PlayerStateInterface.h" />
+    <ClInclude Include="FiringState.h" />
+    <ClInclude Include="FireCommand.h" />
+    <ClInclude Include="PlayerStateManager.h" />
+    <ClInclude Include="MovingState.h" />
+    <ClInclude Include="ICommand.h" />
   </ItemGroup>
   <ItemGroup>
+<<<<<<< Updated upstream
     <ClCompile Include="bitmapclass.cpp" />
+=======
+    <ClCompile Include="AimingCommand.cpp" />
+    <ClCompile Include="bitmapclass.cpp" />
+    <ClCompile Include="Booster.cpp" />
+    <ClCompile Include="BoosterCommand.cpp" />
+    <ClCompile Include="Boosting.cpp" />
+    <ClCompile Include="BoostingCommand.cpp" />
+>>>>>>> Stashed changes
     <ClCompile Include="cameraclass.cpp" />
     <ClCompile Include="cameramanagerclass.cpp" />
     <ClCompile Include="colliderclass.cpp" />
     <ClCompile Include="collisionmanagerclass.cpp" />
     <ClCompile Include="colorshaderclass.cpp" />
+    <ClCompile Include="ICommand.cpp" />
     <ClCompile Include="cpuclass.cpp" />
     <ClCompile Include="d3dclass.cpp" />
     <ClCompile Include="DDSTextureLoader.cpp" />
     <ClCompile Include="enemymanagerclass.cpp" />
     <ClCompile Include="enemyplaneclass.cpp" />
+<<<<<<< Updated upstream
+=======
+    <ClCompile Include="FireCommand.cpp" />
+>>>>>>> Stashed changes
     <ClCompile Include="fireshaderclass.cpp" />
+    <ClCompile Include="FiringState.cpp" />
     <ClCompile Include="fogshaderclass.cpp" />
     <ClCompile Include="fontclass.cpp" />
     <ClCompile Include="fontshaderclass.cpp" />
     <ClCompile Include="fpsclass.cpp" />
     <ClCompile Include="graphicsclass.cpp" />
     <ClCompile Include="inputclass.cpp" />
+    <ClCompile Include="inputmanagerclass.cpp" />
     <ClCompile Include="lightclass.cpp" />
     <ClCompile Include="lightshaderclass.cpp" />
     <ClCompile Include="main.cpp" />
@@ -83,12 +127,30 @@
     <ClCompile Include="modelclass.cpp" />
     <ClCompile Include="announceclass.cpp" />
     <ClCompile Include="objectclass.cpp" />
+<<<<<<< Updated upstream
     <ClCompile Include="soundclass.cpp" />
+=======
+    <ClCompile Include="Passive.cpp" />
+    <ClCompile Include="PassiveStateManager.cpp" />
+    <ClCompile Include="PlayerStateInterface.cpp" />
+    <ClCompile Include="PlayerStateManager.cpp" />
+    <ClCompile Include="MovingState.cpp" />
+    <ClCompile Include="RotateDownCommand.cpp" />
+    <ClCompile Include="RotateLeftCommand.cpp" />
+    <ClCompile Include="RotateRightCommand.cpp" />
+    <ClCompile Include="RotateUpCommand.cpp" />
+    <ClCompile Include="soundclass.cpp" />
+    <ClCompile Include="Stopping.cpp" />
+    <ClCompile Include="StoppingCommand.cpp" />
+>>>>>>> Stashed changes
     <ClCompile Include="uimanagerclass.cpp" />
     <ClCompile Include="particleshaderclass.cpp" />
     <ClCompile Include="particlesystemclass.cpp" />
     <ClCompile Include="playermanagerclass.cpp" />
+<<<<<<< Updated upstream
     <ClCompile Include="shaderinterface.h" />
+=======
+>>>>>>> Stashed changes
     <ClCompile Include="skyboxshaderclass.cpp" />
     <ClCompile Include="systemclass.cpp" />
     <ClCompile Include="textclass.cpp" />
@@ -164,7 +226,7 @@
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{805baa0c-ec32-4210-85a6-9396a3b63830}</ProjectGuid>
     <RootNamespace>PilotShootingProject</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.22621.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -176,7 +238,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>

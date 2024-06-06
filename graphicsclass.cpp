@@ -118,6 +118,22 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
         return false;
     }
 
+<<<<<<< Updated upstream
+=======
+    m_InputManager = new InputManagerClass;
+    if (!m_InputManager)
+    {
+        return false;
+    }
+
+    result = m_InputManager->Initialize(m_PlayerManager, m_CameraManager);
+    if (!result)
+    {
+        MessageBox(hwnd, L"Could not initialize InputManager.", L"Error", MB_OK);
+        return false;
+    }
+
+>>>>>>> Stashed changes
 	m_Cube = new ModelClass;
 	if (!m_Cube)
 	{
@@ -424,6 +440,14 @@ void GraphicsClass::Shutdown()
 		m_EnemyAirCraft = 0;
 	}
 
+    // Release the model object.
+    if (m_InputManager)
+    {
+        m_InputManager->Shutdown();
+        delete m_InputManager;
+        m_InputManager = 0;
+    }
+
 	// Release the model object.
 	if (m_Target)
 	{
@@ -507,9 +531,17 @@ bool GraphicsClass::Frame(const DIMOUSESTATE& mouseState, const BYTE* keyboardSt
 
     // frame
 
+<<<<<<< Updated upstream
     m_PlayerManager->Frame(mouseState, keyboardState, frameTime, m_D3D->GetDeviceContext());
     m_CameraManager->Frame(mouseState, keyboardState);
 
+=======
+    m_InputManager->Frame(mouseState, keyboardState);
+
+    m_PlayerManager->Frame(frameTime, m_D3D->GetDeviceContext());
+    m_CameraManager->Frame(mouseState);
+
+>>>>>>> Stashed changes
     m_EnemyManager->Frame(m_PlayerManager->GetMissile());
     m_ParticleSystem->Frame(frameTime, m_D3D->GetDeviceContext());
 

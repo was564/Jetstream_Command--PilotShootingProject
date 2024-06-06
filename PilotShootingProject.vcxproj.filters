@@ -36,9 +36,6 @@
     <ClInclude Include="graphicsclass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="inputclass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="modelclass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -93,9 +90,12 @@
     <ClInclude Include="cameramanagerclass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+<<<<<<< Updated upstream
     <ClInclude Include="playermanagerclass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+=======
+>>>>>>> Stashed changes
     <ClInclude Include="uimanagerclass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -127,6 +127,78 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="soundclass.h">
+<<<<<<< Updated upstream
+=======
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="playermanagerclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AimingCommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="inputclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="inputmanagerclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shaderinterface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RotateUpCommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RotateRightCommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RotateLeftCommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RotateDownCommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerStateInterface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FiringState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FireCommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerStateManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MovingState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ICommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BoostingCommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PassiveStateManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Passive.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Boosting.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Stopping.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StoppingCommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Booster.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BoosterCommand.h">
+>>>>>>> Stashed changes
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -203,6 +275,7 @@
     <ClCompile Include="particleshaderclass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+<<<<<<< Updated upstream
     <ClCompile Include="shaderinterface.h">
       <Filter>Header Files</Filter>
     </ClCompile>
@@ -212,6 +285,11 @@
     <ClCompile Include="playermanagerclass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+=======
+    <ClCompile Include="cameramanagerclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+>>>>>>> Stashed changes
     <ClCompile Include="uimanagerclass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -240,6 +318,72 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="soundclass.cpp">
+<<<<<<< Updated upstream
+=======
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerStateInterface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MovingState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerStateManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="playermanagerclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FiringState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="inputmanagerclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ICommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RotateUpCommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RotateDownCommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RotateLeftCommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RotateRightCommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FireCommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AimingCommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BoostingCommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PassiveStateManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Passive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Boosting.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Stopping.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StoppingCommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Booster.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BoosterCommand.cpp">
+>>>>>>> Stashed changes
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

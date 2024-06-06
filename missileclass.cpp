@@ -1,17 +1,29 @@
 #include "missileclass.h"
+<<<<<<< Updated upstream
+=======
+#include "playermanagerclass.h"
+>>>>>>> Stashed changes
 
 MissileClass::MissileClass()
 {
     m_Missile = 0;
     m_Fire = 0;
     m_Collider = 0;
+<<<<<<< Updated upstream
+=======
+    m_RemainTimer = 0;
+>>>>>>> Stashed changes
 }
 
 MissileClass::~MissileClass()
 {
 }
 
+<<<<<<< Updated upstream
 bool MissileClass::Initialize(ID3D11Device* device)
+=======
+bool MissileClass::Initialize(ID3D11Device* device, PlayerManagerClass* owner)
+>>>>>>> Stashed changes
 {
     bool result;
 
@@ -33,6 +45,11 @@ bool MissileClass::Initialize(ID3D11Device* device)
 
     m_Collider = new ColliderClass(2.0f, m_Missile->GetPosition());
 
+<<<<<<< Updated upstream
+=======
+    m_Owner = owner;
+
+>>>>>>> Stashed changes
     m_IsActivate = false;
 
     return true;
@@ -63,6 +80,7 @@ void MissileClass::Shutdown()
 
 void MissileClass::Activate(XMFLOAT3 position, XMFLOAT3 rotation)
 {
+<<<<<<< Updated upstream
     m_Missile->SetPosition(position);
     m_Missile->SetRotation(rotation);
 
@@ -76,6 +94,23 @@ void MissileClass::Activate(XMFLOAT3 position, XMFLOAT3 rotation)
     particlePosition.x = position.x + backwardPosition.x * speed;
     particlePosition.y = position.y + backwardPosition.y * speed;
     particlePosition.z = position.z + backwardPosition.z * speed;
+=======
+    m_RemainTimer = 0;
+
+    m_Missile->SetPosition(position);
+    m_Missile->SetRotation(rotation);
+
+    static float distance = -1.0f;
+
+    XMFLOAT3 particlePosition;
+    XMFLOAT3 forwardPosition;
+    XMVECTOR missileForward = m_Missile->GetForward();
+    XMStoreFloat3(&forwardPosition,  missileForward);
+
+    particlePosition.x = position.x + forwardPosition.x * distance;
+    particlePosition.y = position.y + forwardPosition.y * distance;
+    particlePosition.z = position.z + forwardPosition.z * distance;
+>>>>>>> Stashed changes
     m_Fire->SetPosition(particlePosition);
 
     m_IsActivate = true;
@@ -83,6 +118,10 @@ void MissileClass::Activate(XMFLOAT3 position, XMFLOAT3 rotation)
 
 void MissileClass::DeActivate()
 {
+<<<<<<< Updated upstream
+=======
+    m_RemainTimer = 0;
+>>>>>>> Stashed changes
     m_Collider->SetCenter(XMFLOAT3(-20.0f, -20.0f, -20.0f));
     m_IsActivate = false;
 }
@@ -91,14 +130,30 @@ void MissileClass::DeActivate()
 
 void MissileClass::Frame(ID3D11DeviceContext* deviceContext, float frameTime)
 {
+<<<<<<< Updated upstream
     static float speed = 0.2f;
+=======
+    static float speed = 0.4f;
+
+    m_RemainTimer++;
+
+    if (m_RemainTimer > 60 * 5) // 5 seconds
+    {
+        m_Owner->DeActivateMissile();
+        return;
+    }
+>>>>>>> Stashed changes
 
     XMFLOAT3 move;
     XMVECTOR missileForward = m_Missile->GetForward();
     XMStoreFloat3(&move, missileForward);
     m_Missile->TranslatePosition(move.x * speed, move.y * speed, move.z * speed);
 
+<<<<<<< Updated upstream
     m_Fire->TranslatePosition(move.x, move.y, move.z);
+=======
+    m_Fire->TranslatePosition(move.x * speed, move.y * speed, move.z * speed);
+>>>>>>> Stashed changes
 
     m_Fire->Frame(frameTime, deviceContext);
 

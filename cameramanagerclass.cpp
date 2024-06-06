@@ -43,13 +43,23 @@ void CameraManagerClass::ChangeMode(CameraMode mode)
 }
 
 // how to use: mouseMovingValue (lx, ly), keyboard[ key ]
+<<<<<<< Updated upstream
 void CameraManagerClass::Frame(const DIMOUSESTATE& mouseState, const BYTE* keyboardState)
 {
+=======
+void CameraManagerClass::Frame(const DIMOUSESTATE& mouseState)
+{
+    /*
+>>>>>>> Stashed changes
     // keyboard Mouse Input Process
 #define GetKeyDown(key) keyboardState[key] & 0x80
 
     if (mouseState.rgbButtons[1]) m_Mode = CameraMode::AimingMode;
     else m_Mode = CameraMode::ThirdPerspectMode;
+<<<<<<< Updated upstream
+=======
+    */
+>>>>>>> Stashed changes
 
     static float mouseSensibility = 0.1f;
     CameraClass* currentCamera = m_CameraList[m_Mode];
@@ -87,3 +97,16 @@ void CameraManagerClass::Frame(const DIMOUSESTATE& mouseState, const BYTE* keybo
         currentCamera->SetPosition(cameraPosition);
     }
 }
+<<<<<<< Updated upstream
+=======
+
+void CameraManagerClass::HandleInput(InputManagerClass::Behavior input)
+{
+    switch (input) {
+        case InputManagerClass::Behavior::Aiming:
+            if(m_Mode == AimingMode) m_Mode = CameraMode::ThirdPerspectMode;
+            else if(m_Mode == ThirdPerspectMode) m_Mode = CameraMode::AimingMode;
+            break;
+    }
+}
+>>>>>>> Stashed changes

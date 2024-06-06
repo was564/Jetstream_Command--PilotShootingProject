@@ -310,8 +310,13 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 	{
 		
 		// If windowed then set it to 800x600 resolution.
+<<<<<<< Updated upstream
 		screenWidth  = 1600;
 		screenHeight = 1200;
+=======
+		screenWidth  = 1280;
+		screenHeight = 720;
+>>>>>>> Stashed changes
 		
 
 		// Place the window in the middle of the screen.

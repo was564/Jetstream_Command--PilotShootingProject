@@ -4,6 +4,10 @@
 #include "cameraclass.h"
 #include "modelclass.h"
 #include "announceclass.h"
+<<<<<<< Updated upstream
+=======
+#include "inputmanagerclass.h"
+>>>>>>> Stashed changes
 
 using namespace std;
 
@@ -25,7 +29,12 @@ public:
     CameraClass* GetCameraInstance();
     CameraMode GetMode();
     void ChangeMode(CameraMode);
+<<<<<<< Updated upstream
     void Frame(const DIMOUSESTATE&, const BYTE*);
+=======
+    void Frame(const DIMOUSESTATE&);
+    void HandleInput(InputManagerClass::Behavior);
+>>>>>>> Stashed changes
 
 private:
     CameraManagerClass::CameraMode m_Mode;
