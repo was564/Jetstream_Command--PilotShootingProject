@@ -27,10 +27,7 @@
 #include "bitmapclass.h"
 #include "enemymanagerclass.h"
 #include "soundclass.h"
-<<<<<<< Updated upstream
-=======
 #include "inputmanagerclass.h"
->>>>>>> Stashed changes
 #include <dinput.h>
 #include <set>
 #include <map>
@@ -87,11 +84,8 @@ private:
     UIManagerClass* m_UIManager;
     EnemyManagerClass* m_EnemyManager;
 
-<<<<<<< Updated upstream
-=======
     InputManagerClass* m_InputManager;
 
->>>>>>> Stashed changes
     LightClass* m_Light;
     
     ModelClass* m_Player;

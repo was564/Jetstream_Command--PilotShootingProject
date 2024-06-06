@@ -90,12 +90,6 @@
     <ClInclude Include="cameramanagerclass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-<<<<<<< Updated upstream
-    <ClInclude Include="playermanagerclass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-=======
->>>>>>> Stashed changes
     <ClInclude Include="uimanagerclass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -127,8 +121,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="soundclass.h">
-<<<<<<< Updated upstream
-=======
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="playermanagerclass.h">
@@ -198,7 +190,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BoosterCommand.h">
->>>>>>> Stashed changes
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -275,21 +266,9 @@
     <ClCompile Include="particleshaderclass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-<<<<<<< Updated upstream
-    <ClCompile Include="shaderinterface.h">
-      <Filter>Header Files</Filter>
-    </ClCompile>
     <ClCompile Include="cameramanagerclass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="playermanagerclass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-=======
-    <ClCompile Include="cameramanagerclass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
->>>>>>> Stashed changes
     <ClCompile Include="uimanagerclass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -318,8 +297,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="soundclass.cpp">
-<<<<<<< Updated upstream
-=======
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PlayerStateInterface.cpp">
@@ -383,7 +360,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="BoosterCommand.cpp">
->>>>>>> Stashed changes
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,20 +1,12 @@
 #include "playermanagerclass.h"
 #include "graphicsclass.h"
 
-<<<<<<< Updated upstream
-PlayerManagerClass::PlayerManagerClass()
-{
-    m_Player = 0;
-    m_Missile = 0;
-    m_IsFired = false;
-=======
 
 PlayerManagerClass::PlayerManagerClass()
 {
     m_Player = 0;
     m_Graphics = 0;
     m_Missile = 0;
->>>>>>> Stashed changes
 }
 
 PlayerManagerClass::~PlayerManagerClass()
@@ -34,9 +26,6 @@ bool PlayerManagerClass::Initialize(ID3D11Device* device, ModelClass* player, Gr
         return false;
     }
 
-<<<<<<< Updated upstream
-    result = m_Missile->Initialize(device);
-=======
     result = m_Missile->Initialize(device, this);
     if (!result)
     {
@@ -62,7 +51,6 @@ bool PlayerManagerClass::Initialize(ID3D11Device* device, ModelClass* player, Gr
     }
 
     result = m_PassiveManager->Initialize();
->>>>>>> Stashed changes
     if (!result)
     {
         return false;
@@ -73,21 +61,6 @@ bool PlayerManagerClass::Initialize(ID3D11Device* device, ModelClass* player, Gr
 
 void PlayerManagerClass::Shutdown()
 {
-<<<<<<< Updated upstream
-    m_Missile->Shutdown();
-}
-
-void PlayerManagerClass::Frame(const DIMOUSESTATE& mouseState, const BYTE* keyboardState, 
-    float frameTime, ID3D11DeviceContext* deviceContext)
-{
-#define GetKeyDown(key) keyboardState[key] & 0x80
-
-    static int time = 0;
-    time += 1;
-
-    static float speed = 0.6f * 0.01f; // 0.01f = 1 / average frame
-    
-=======
     if (m_Missile)
     {
         m_Missile->Shutdown();
@@ -138,7 +111,6 @@ void PlayerManagerClass::Frame(float frameTime, ID3D11DeviceContext* deviceConte
     static float speed = 0.6f * 0.02f; // 0.01f = 1 / average frame
     
 #define GetKeyDown(key) keyboardState[key] & 0x80
->>>>>>> Stashed changes
     if (GetKeyDown(DIK_A)) m_Player->Rotate(0.0f, -1.0f, 0.0f);
     if (GetKeyDown(DIK_D)) m_Player->Rotate(0.0f, 1.0f, 0.0f);
     if (GetKeyDown(DIK_W)) m_Player->Rotate(1.0f, 0.0f, 0.0f);
@@ -147,14 +119,10 @@ void PlayerManagerClass::Frame(float frameTime, ID3D11DeviceContext* deviceConte
     XMFLOAT3 move;
     XMStoreFloat3(&move, m_Player->GetForward());
     m_Player->TranslatePosition(move.x * speed, move.y * speed, move.z * speed);
-<<<<<<< Updated upstream
-
-=======
     */
 
     
     /*
->>>>>>> Stashed changes
     if (mouseState.rgbButtons[0] && !m_IsFired)
     {
         m_IsFired = true;
@@ -179,16 +147,12 @@ void PlayerManagerClass::Frame(float frameTime, ID3D11DeviceContext* deviceConte
         m_Missile->DeActivate();
         RemoveMissileInRender();
     }
-<<<<<<< Updated upstream
-    else if (m_IsFired) m_Missile->Frame(deviceContext, frameTime);
-=======
     */
 }
 
 void PlayerManagerClass::HandleInput(InputManagerClass::Behavior input)
 {
     m_StateManager->HandleInput(input);
->>>>>>> Stashed changes
 }
 
 void PlayerManagerClass::AddMissileInRender()
@@ -203,21 +167,16 @@ void PlayerManagerClass::RemoveMissileInRender()
     m_Graphics->RemoveRenderObject(m_Missile->GetParticle());
 }
 
-<<<<<<< Updated upstream
-=======
 void PlayerManagerClass::DeActivateMissile()
 {
     m_Missile->DeActivate();
     RemoveMissileInRender();
 }
 
->>>>>>> Stashed changes
 MissileClass* PlayerManagerClass::GetMissile()
 {
     return m_Missile;
 }
-<<<<<<< Updated upstream
-=======
 
 ModelClass* PlayerManagerClass::GetModel()
 {
@@ -253,4 +212,3 @@ void PlayerManagerClass::ResetSpeed()
 {
     m_Speed = 0.6f * 0.02f;
 }
->>>>>>> Stashed changes

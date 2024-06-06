@@ -22,13 +22,10 @@
     <ClInclude Include="AimingCommand.h" />
     <ClInclude Include="AlignedAllocationPolicy.h" />
     <ClInclude Include="bitmapclass.h" />
-<<<<<<< Updated upstream
-=======
     <ClInclude Include="Booster.h" />
     <ClInclude Include="BoosterCommand.h" />
     <ClInclude Include="Boosting.h" />
     <ClInclude Include="BoostingCommand.h" />
->>>>>>> Stashed changes
     <ClInclude Include="cameraclass.h" />
     <ClInclude Include="cameramanagerclass.h" />
     <ClInclude Include="colliderclass.h" />
@@ -54,15 +51,11 @@
     <ClInclude Include="objectclass.h" />
     <ClInclude Include="observerclass.h" />
     <ClInclude Include="announceclass.h" />
-<<<<<<< Updated upstream
-    <ClInclude Include="soundclass.h" />
-=======
     <ClInclude Include="Passive.h" />
     <ClInclude Include="PassiveStateManager.h" />
     <ClInclude Include="soundclass.h" />
     <ClInclude Include="Stopping.h" />
     <ClInclude Include="StoppingCommand.h" />
->>>>>>> Stashed changes
     <ClInclude Include="uimanagerclass.h" />
     <ClInclude Include="particleshaderclass.h" />
     <ClInclude Include="particlesystemclass.h" />
@@ -86,16 +79,12 @@
     <ClInclude Include="ICommand.h" />
   </ItemGroup>
   <ItemGroup>
-<<<<<<< Updated upstream
-    <ClCompile Include="bitmapclass.cpp" />
-=======
     <ClCompile Include="AimingCommand.cpp" />
     <ClCompile Include="bitmapclass.cpp" />
     <ClCompile Include="Booster.cpp" />
     <ClCompile Include="BoosterCommand.cpp" />
     <ClCompile Include="Boosting.cpp" />
     <ClCompile Include="BoostingCommand.cpp" />
->>>>>>> Stashed changes
     <ClCompile Include="cameraclass.cpp" />
     <ClCompile Include="cameramanagerclass.cpp" />
     <ClCompile Include="colliderclass.cpp" />
@@ -107,10 +96,7 @@
     <ClCompile Include="DDSTextureLoader.cpp" />
     <ClCompile Include="enemymanagerclass.cpp" />
     <ClCompile Include="enemyplaneclass.cpp" />
-<<<<<<< Updated upstream
-=======
     <ClCompile Include="FireCommand.cpp" />
->>>>>>> Stashed changes
     <ClCompile Include="fireshaderclass.cpp" />
     <ClCompile Include="FiringState.cpp" />
     <ClCompile Include="fogshaderclass.cpp" />
@@ -127,9 +113,6 @@
     <ClCompile Include="modelclass.cpp" />
     <ClCompile Include="announceclass.cpp" />
     <ClCompile Include="objectclass.cpp" />
-<<<<<<< Updated upstream
-    <ClCompile Include="soundclass.cpp" />
-=======
     <ClCompile Include="Passive.cpp" />
     <ClCompile Include="PassiveStateManager.cpp" />
     <ClCompile Include="PlayerStateInterface.cpp" />
@@ -142,15 +125,10 @@
     <ClCompile Include="soundclass.cpp" />
     <ClCompile Include="Stopping.cpp" />
     <ClCompile Include="StoppingCommand.cpp" />
->>>>>>> Stashed changes
     <ClCompile Include="uimanagerclass.cpp" />
     <ClCompile Include="particleshaderclass.cpp" />
     <ClCompile Include="particlesystemclass.cpp" />
     <ClCompile Include="playermanagerclass.cpp" />
-<<<<<<< Updated upstream
-    <ClCompile Include="shaderinterface.h" />
-=======
->>>>>>> Stashed changes
     <ClCompile Include="skyboxshaderclass.cpp" />
     <ClCompile Include="systemclass.cpp" />
     <ClCompile Include="textclass.cpp" />
